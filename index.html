@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電競平台 V5.0.1</title>
+    <title>電競平台 V5.0.1 - 完整版</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
-        .container { background-color: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; width: 100%; max-width: 400px; padding: 30px 20px; text-align: center; position: relative; }
+        .container { background-color: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; position: relative; }
         .logo { width: 120px; margin-bottom: 15px; }
         
         select { width: 100%; padding: 12px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 8px; margin-bottom: 20px; font-size: 1rem; }
@@ -20,7 +20,7 @@
         .divider { color: #666; font-size: 0.85rem; margin: 15px 0; }
         
         .input-group { margin-bottom: 14px; text-align: left; }
-        .input-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #fff; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #fff; margin-top: 5px; }
         
         .action-btn { width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; color: #fff; margin-top: 6px; }
         .login-submit-btn { background-color: #2962ff; }
@@ -32,15 +32,23 @@
 
         /* 主頁與右上角帳號區塊樣式 */
         #main-page { width: 100%; text-align: left; }
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .user-profile-badge { background: #2a2a2a; border: 1px solid #444; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; color: #b388ff; display: flex; align-items: center; gap: 6px; }
         .user-profile-badge:hover { background: #333; }
         
-        /* 帳號資訊彈出面板 */
+        /* 帳號資訊面板 */
         .profile-modal { background: #252525; border: 1px solid #444; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .profile-modal h3 { color: #fff; margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .profile-modal p { font-size: 0.9rem; color: #ccc; margin-bottom: 8px; }
         .logout-btn { background: #d32f2f; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
+
+        /* 管理員專區樣式 */
+        .admin-panel { background: #1a237e; border: 1px solid #3f51b5; border-radius: 10px; padding: 15px; margin-top: 15px; }
+        .admin-panel h4 { color: #8c9eff; margin-bottom: 10px; border-bottom: 1px solid #3f51b5; padding-bottom: 5px; }
+        .admin-control-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .admin-control-row input { flex: 1; padding: 8px; background: #0d1b2a; border: 1px solid #3f51b5; border-radius: 6px; color: #fff; }
+        .admin-control-row button { padding: 8px 12px; background: #3f51b5; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .user-list { max-height: 120px; overflow-y: auto; background: #0d1b2a; padding: 8px; border-radius: 6px; font-size: 0.85rem; color: #b0bec5; }
     </style>
 </head>
 <body>
@@ -83,24 +91,23 @@
                 <div class="input-group"><input type="text" id="reg-uid" placeholder="設定 UID"></div>
                 <div class="input-group"><input type="password" id="reg-pwd" placeholder="設定 Password"></div>
                 <div class="input-group" id="invite-code-group" style="display: none;">
-                    <input type="text" id="reg-invite-code" placeholder="請輸入管理員設定之身份驗證碼">
+                    <input type="text" id="reg-invite-code" placeholder="請輸入管理員身份驗證碼">
                 </div>
                 <button class="action-btn register-submit-btn" onclick="handleRegister()">註冊</button>
                 <button class="switch-mode" onclick="toggleMode('login')">已有帳號？切換為登入模式</button>
             </div>
         </div>
 
-        <!-- 登入後的主頁區塊 (預設隱藏) -->
+        <!-- 登入後的主頁區塊 -->
         <div id="main-page" class="hidden">
             <div class="header-bar">
                 <h3>電競平台大廳</h3>
-                <!-- 右上角顯示登入帳號，點擊可看主頁資訊 -->
                 <div class="user-profile-badge" onclick="toggleProfileModal()">
                     👤 <span id="display-username">使用者</span> ▾
                 </div>
             </div>
 
-            <!-- 帳號詳細資訊面板 (預設隱藏) -->
+            <!-- 帳號詳細資訊面板 -->
             <div id="profile-modal" class="profile-modal hidden">
                 <h3>個人主頁資訊</h3>
                 <p><strong>帳號/UID：</strong> <span id="info-uid">-</span></p>
@@ -109,14 +116,33 @@
                 <button class="logout-btn" onclick="handleLogout()">登出帳號</button>
             </div>
 
-            <div style="text-align: center; padding: 40px 0; color: #888;">
+            <!-- 管理員專用控制台 (僅 Admin 顯示) -->
+            <div id="admin-dashboard" class="admin-panel hidden">
+                <h4>🛡️ 管理員控制台</h4>
+                <div class="input-group" style="margin-bottom: 8px;">
+                    <label style="font-size: 0.8rem; color: #8c9eff;">修改身份驗證碼：</label>
+                    <div class="admin-control-row">
+                        <input type="text" id="admin-set-code" value="Paul0420#">
+                        <button onclick="updateInviteCode()">更新</button>
+                    </div>
+                </div>
+                <div style="font-size: 0.8rem; color: #8c9eff; margin-bottom: 5px;">註冊用戶清單：</div>
+                <div class="user-list" id="admin-user-list">
+                    - user_test01 (普通用戶)<br>
+                    - club_member99 (俱樂部成員)
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 20px 0; color: #888;">
                 <h2>歡迎回來！</h2>
-                <p style="margin-top: 10px; font-size: 0.9rem;">請點擊右上角帳號以檢視各項資訊。</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">系統運行順暢，請享受您的電競體驗。</p>
             </div>
         </div>
     </div>
 
     <script>
+        // 全域動態驗證碼（可由管理員修改）
+        window.systemInviteCode = "Paul0420#";
         let currentUser = { uid: '', role: '' };
 
         function handleRoleChange() {
@@ -131,7 +157,7 @@
                 roleNotice.classList.add('hidden');
             } else {
                 socialGroup.classList.add('hidden');
-                roleNotice.classList.remove('hidden');
+                roleNotice.classList.add('hidden'); // 改為直接使用站內ID
             }
 
             if (role === 'club' || role === 'cs') {
@@ -159,8 +185,7 @@
             }
         }
 
-        // 登入成功跳轉主頁
-        function loginSuccess(uid, roleName) {
+        function loginSuccess(uid, roleName, is}:${false) {
             currentUser.uid = uid;
             currentUser.role = roleName;
 
@@ -168,24 +193,40 @@
             document.getElementById('info-uid').textContent = uid;
             document.getElementById('info-role').textContent = roleName;
 
-            // 切換畫面
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('main-page').classList.remove('hidden');
+
+            // 判斷是否為管理員，顯示管理員面板
+            const adminDashboard = document.getElementById('admin-dashboard');
+            if (roleName.includes("管理員")) {
+                adminDashboard.classList.remove('hidden');
+            } else {
+                adminDashboard.classList.add('hidden');
+            }
         }
 
-        // 點擊右上角帳號顯示/隱藏主頁資訊面板
         function toggleProfileModal() {
             const modal = document.getElementById('profile-modal');
             modal.classList.toggle('hidden');
         }
 
-        // 登出返回登入頁
         function handleLogout() {
             document.getElementById('main-page').classList.add('hidden');
             document.getElementById('auth-view').classList.remove('hidden');
             document.getElementById('profile-modal').classList.add('hidden');
             document.getElementById('login-pwd').value = '';
         }
+
+        // 管理員功能：更新驗證碼
+        window.updateInviteCode = () => {
+            const newCode = document.getElementById('admin-set-code').value;
+            if (!newCode) {
+                alert("驗證碼不能為空！");
+                return;
+            }
+            window.systemInviteCode = newCode;
+            alert("成功更新身份驗證碼為: " + newCode);
+        };
 
         window.handleLogin = () => {
             const roleSelect = document.getElementById('user-role');
@@ -224,7 +265,7 @@
                 return;
             }
 
-            if ((role === 'club' || role === 'cs') && inviteCode !== "Paul0420#") {
+            if ((role === 'club' || role === 'cs') && inviteCode !== window.systemInviteCode) {
                 alert("身份驗證碼錯誤，無法註冊該身份！");
                 return;
             }
@@ -239,6 +280,7 @@
         };
     </script>
 
+    <!-- Firebase Google 登入模組修正 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
@@ -260,10 +302,9 @@
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                // 呼叫主頁跳轉
                 loginSuccess(user.displayName || user.email, "普通用戶");
             } catch (e) {
-                alert("登入失敗: " + e.message + "\n\n檢查提醒：\n1. Firebase 控制台是否已啟用 Google 登入？\n2. 授權網域是否包含此網站網址？");
+                alert("Google 登入失敗: " + e.message + "\n\n排查提醒：\n1. 請確認 Firebase Console 的 Authentication 已啟用 Google 提供者。\n2. 確保網址已加入 Firebase 授權網域 (Authorized Domains)。\n3. 若使用本地端測試，請確認透過 http://localhost 或 127.0.0.1 運行。");
             }
         };
     </script>
