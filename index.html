@@ -12,7 +12,6 @@
         
         select { width: 100%; padding: 12px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 8px; margin-bottom: 20px; font-size: 1rem; }
         
-        .social-login-group { transition: all 0.3s ease; }
         .social-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: none; cursor: pointer; font-size: 0.95rem; }
         .social-icon { width: 20px; height: 20px; margin-right: 10px; }
         .google-btn { background: #fff; color: #000; }
@@ -20,9 +19,14 @@
         
         .divider { color: #666; font-size: 0.85rem; margin: 15px 0; }
         
-        .input-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #fff; margin-bottom: 12px; }
-        .login-btn { width: 100%; padding: 12px; background: #2962ff; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .input-group { margin-bottom: 14px; text-align: left; }
+        .input-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #fff; }
         
+        .action-btn { width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; color: #fff; margin-top: 6px; }
+        .login-submit-btn { background-color: #2962ff; }
+        .register-submit-btn { background-color: #00c853; }
+
+        .switch-mode { margin-top: 18px; font-size: 0.85rem; color: #b388ff; cursor: pointer; background: none; border: none; text-decoration: underline; }
         .hidden { display: none !important; }
         .notice { font-size: 0.85rem; color: #b388ff; margin-bottom: 15px; }
     </style>
@@ -41,11 +45,11 @@
             <option value="admin">管理員</option>
         </select>
 
-        <!-- 提示訊息 -->
-        <div id="role-notice" class="notice hidden">此身份需使用站內 ID 進行驗證登入</div>
+        <!-- 非普通用戶提示 -->
+        <div id="role-notice" class="notice hidden">此身份需使用站內 ID 進行驗證</div>
 
         <!-- 社交登入群組（僅普通用戶可見） -->
-        <div id="social-group" class="social-login-group">
+        <div id="social-group">
             <button class="social-btn google-btn" id="google-login">
                 <span class="social-icon"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.17 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.13 0 9.87 0 12s.43 3.87 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg></span>
                 使用 Google 帳號登入
@@ -56,19 +60,28 @@
                 使用 Apple 帳號登入
             </button>
 
-            <div class="divider" id="divider-text">或使用站內 ID</div>
+            <div class="divider">或使用站內 ID</div>
         </div>
 
-        <!-- 站內 ID 登入 -->
-        <div class="input-group">
-            <input type="text" id="uid" placeholder="UID">
-            <input type="password" id="password" placeholder="Password">
-            <button class="login-btn" onclick="handleLogin()">登入</button>
+        <!-- 登入表單 -->
+        <div id="login-section">
+            <div class="input-group"><input type="text" id="login-uid" placeholder="UID"></div>
+            <div class="input-group"><input type="password" id="login-pwd" placeholder="Password"></div>
+            <button class="action-btn login-submit-btn" onclick="handleLogin()">登入</button>
+            <button class="switch-mode" onclick="toggleMode('register')">沒有帳號？切換為註冊模式</button>
+        </div>
+
+        <!-- 註冊表單 -->
+        <div id="register-section" class="hidden">
+            <div class="input-group"><input type="text" id="reg-uid" placeholder="設定 UID"></div>
+            <div class="input-group"><input type="password" id="reg-pwd" placeholder="設定 Password"></div>
+            <button class="action-btn register-submit-btn" onclick="handleRegister()">註冊</button>
+            <button class="switch-mode" onclick="toggleMode('login')">已有帳號？切換為登入模式</button>
         </div>
     </div>
 
     <script>
-        // 切換身份時的動態效果（隱藏/顯示社交登入）
+        // 切換身份：若非普通用戶則隱藏社交登入
         function handleRoleChange() {
             const role = document.getElementById('user-role').value;
             const socialGroup = document.getElementById('social-group');
@@ -83,10 +96,30 @@
             }
         }
 
+        // 切換 登入/註冊 畫面
+        function toggleMode(mode) {
+            const loginSec = document.getElementById('login-section');
+            const regSec = document.getElementById('register-section');
+
+            if (mode === 'register') {
+                loginSec.classList.add('hidden');
+                regSec.classList.remove('hidden');
+            } else {
+                regSec.classList.add('hidden');
+                loginSec.classList.remove('hidden');
+            }
+        }
+
         window.handleLogin = () => {
             const role = document.getElementById('user-role').value;
-            const uid = document.getElementById('uid').value;
-            alert(`正在以 [${role}] 身份透過站內 ID 進行驗證登入...\nUID: ${uid}`);
+            const uid = document.getElementById('login-uid').value;
+            alert(`正在以 [${role}] 身份登入...\nUID: ${uid}`);
+        };
+
+        window.handleRegister = () => {
+            const role = document.getElementById('user-role').value;
+            const uid = document.getElementById('reg-uid').value;
+            alert(`正在註冊 [${role}] 帳號...\nUID: ${uid}`);
         };
     </script>
 
@@ -112,7 +145,7 @@
                 await signInWithPopup(auth, provider);
                 alert("普通用戶 Google 登入成功！");
             } catch (e) {
-                alert("登入失敗: " + e.message + "\n\n檢查提醒：\n1. 請確認 Firebase 專案 Authentication 是否已啟用 Google。\n2. 授權網域 (Authorized Domains) 是否已加入 aeverhub.github.io。");
+                alert("登入失敗: " + e.message + "\n\n檢查提醒：\n1. Firebase 控制台是否已啟用 Google 登入？\n2. 授權網域 (Authorized Domains) 是否已加入 aeverhub.github.io？");
             }
         };
     </script>
