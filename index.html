@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>RMS 電競平台 - 俱樂部商城與完整時軸紀錄系統</title>
+    <title>RMS 電競平台 </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -158,14 +158,16 @@
             arrayUnion
         } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
+        // 使用您的正確 Firebase 設定
         const firebaseConfig = {
-            apiKey: "AIzaSyBq9ogxyp03N-kqGreK5s3ua7-Cozhn5kY",
-            authDomain: "rms-srn.firebaseapp.com",
-            projectId: "rms-srn",
-            storageBucket: "rms-srn.firebasestorage.app",
-            messagingSenderId: "12210643612",
-            appId: "1:12210643612:web:7339c5785b886ac02d4359",
-            measurementId: "G-1SYC3WZSNX"
+            apiKey: "AIzaSyAdyumqIGFQNJYnlhEUGe_b7NMSdBQNsMA",
+            authDomain: "rms-quiz-system-dbserver.firebaseapp.com",
+            databaseURL: "https://rms-quiz-system-dbserver-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "rms-quiz-system-dbserver",
+            storageBucket: "rms-quiz-system-dbserver.firebasestorage.app",
+            messagingSenderId: "769519554299",
+            appId: "1:769519554299:web:fcb6e641fb77dacffc2a5e",
+            measurementId: "G-939JE1X57X"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -354,7 +356,6 @@
             }
         }
 
-        // 共用轉帳畫面與雙向紀錄同步
         function renderTransferSection(backCallback) {
             dashboardDiv.innerHTML = `
                 <h3>【科技結晶轉帳】</h3>
@@ -429,7 +430,6 @@
             });
         }
 
-        // ================= 1. 老闆控制台 =================
         async function showBossDashboard() {
             stepAuth.classList.add("hidden");
             dashboardDiv.classList.remove("hidden");
@@ -488,10 +488,10 @@
                             budget: budget,
                             content: content,
                             status: "待接單",
-                            chatMessages: [], // 初始化聊天室對話紀錄
+                            chatMessages: [],
                             createdAt: new Date().toISOString(),
-                            startedAt: null,  // 開始打單時間
-                            completedAt: null // 結單時間
+                            startedAt: null,
+                            completedAt: null
                         };
 
                         const docRef = await addDoc(collection(db, "custom_orders"), orderData);
@@ -562,7 +562,6 @@
                 });
             });
 
-            // 查看個人訂單與對話、時間軸紀錄
             document.getElementById("btn-my-orders").addEventListener("click", () => {
                 let historyHtml = `<h3>【我的訂單與對話紀錄】</h3>`;
                 const myOrders = userData.orders || [];
@@ -637,7 +636,6 @@
             });
         }
 
-        // ================= 2. 俱樂部成員專區 =================
         async function showMemberDashboard() {
             stepAuth.classList.add("hidden");
             dashboardDiv.classList.remove("hidden");
@@ -661,7 +659,6 @@
                 <button class="menu-btn" id="btn-payout" style="background-color: #e91e63; color:#fff;">5. 申請工資結清 (提領)</button>
             `;
 
-            // 接單大廳
             document.getElementById("btn-view-orders").addEventListener("click", async () => {
                 dashboardDiv.innerHTML = `<h3>載入中...</h3>`;
                 const normalSnap = await getDocs(collection(db, "normal_orders"));
@@ -718,14 +715,12 @@
                         try {
                             const startTime = new Date().toISOString();
 
-                            // 1. 更新全域訂單 (記錄為進行中/待審核並設定開始打單時間)
                             await updateDoc(doc(db, orderType, orderId), {
                                 status: "進行中",
                                 taker: currentUserIdentifier,
                                 startedAt: startTime
                             });
 
-                            // 2. 成員個人紀錄
                             const orderRecord = {
                                 orderId: orderId,
                                 boss: bossName,
@@ -741,7 +736,6 @@
                                 orders: arrayUnion(orderRecord)
                             });
 
-                            // 3. 同步老闆個人紀錄
                             const usersSnap = await getDocs(collection(db, "users"));
                             for (let userDoc of usersSnap.docs) {
                                 if (userDoc.data().username === bossName) {
@@ -768,7 +762,6 @@
                 bindBackMenuForMember();
             });
 
-            // 查看成員個人紀錄 (含時間軸與對話)
             document.getElementById("btn-my-records").addEventListener("click", () => {
                 let historyHtml = `<h3>【我的接單與對話紀錄】</h3>`;
                 const myOrders = userData.orders || [];
@@ -840,13 +833,11 @@
             });
         }
 
-        // 綁定聊天發送功能 (同步更新雙方及 Firebase)
         function bindChatEvents() {
             document.querySelectorAll(".send-chat-btn").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const orderId = e.target.getAttribute("data-id");
                     const orderType = e.target.getAttribute("data-type");
-                    const bossName = e.target.getAttribute("data-boss");
                     const inputField = document.getElementById(`chat-input-${orderId}`);
                     const text = inputField.value.trim();
 
@@ -859,13 +850,11 @@
                     };
 
                     try {
-                        // 1. 更新全域訂單聊天室
                         const orderRef = doc(db, orderType, orderId);
                         const orderSnap = await getDoc(orderRef);
                         const currentMessages = orderSnap.exists() ? (orderSnap.data().chatMessages || []) : [];
                         await updateDoc(orderRef, { chatMessages: [...currentMessages, messageObj] });
 
-                        // 2. 同步更新發送者個人紀錄中的該訂單對話
                         const myUserRef = doc(db, "users", currentDocId);
                         const mySnap = await getDoc(myUserRef);
                         const myOrders = (mySnap.data().orders || []).map(o => {
@@ -876,11 +865,9 @@
                         });
                         await updateDoc(myUserRef, { orders: myOrders });
 
-                        // 3. 尋找對方（若發送者是老闆，找成員；反之找老闆）並同步更新
                         const usersSnap = await getDocs(collection(db, "users"));
                         for (let userDoc of usersSnap.docs) {
                             const d = userDoc.data();
-                            // 尋找對應的參與者更新聊天紀錄
                             if (d.orders) {
                                 let hasThisOrder = false;
                                 const updatedOtherOrders = d.orders.map(o => {
@@ -897,7 +884,6 @@
                         }
 
                         inputField.value = "";
-                        // 重新整理頁面以顯示最新訊息
                         if (selectedRoleText === "常規用戶") showBossDashboard();
                         else if (selectedRoleText === "俱樂部成員") showMemberDashboard();
                     } catch (err) {
@@ -907,7 +893,6 @@
             });
         }
 
-        // 綁定成員「按下結單」功能 (記錄結單時間並轉為待審核)
         function bindCompleteEvents() {
             document.querySelectorAll(".complete-order-btn").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
@@ -918,13 +903,11 @@
                     try {
                         const completedTime = new Date().toISOString();
 
-                        // 1. 更新全域訂單狀態與結單時間
                         await updateDoc(doc(db, orderType, orderId), {
                             status: "待審核",
                             completedAt: completedTime
                         });
 
-                        // 2. 更新成員個人紀錄
                         const myRef = doc(db, "users", currentDocId);
                         const mySnap = await getDoc(myRef);
                         const myOrders = (mySnap.data().orders || []).map(o => {
@@ -935,7 +918,6 @@
                         });
                         await updateDoc(myRef, { orders: myOrders });
 
-                        // 3. 同步老闆個人紀錄
                         const usersSnap = await getDocs(collection(db, "users"));
                         for (let userDoc of usersSnap.docs) {
                             if (userDoc.data().username === bossName) {
@@ -972,7 +954,6 @@
             });
         }
 
-        // ================= 3. 客服人員專區 =================
         async function showSupportDashboard() {
             stepAuth.classList.add("hidden");
             dashboardDiv.classList.remove("hidden");
@@ -1116,7 +1097,6 @@
             });
         }
 
-        // ================= 4. 管理員後台介面 =================
         function showAdminUI() {
             stepAuth.classList.add("hidden");
             dashboardDiv.classList.remove("hidden");
