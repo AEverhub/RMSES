@@ -3,80 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電競平台 V5.0.1 - 登入專區</title>
+    <title>電競平台 V5.0.1</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #121212; color: #e0e0e0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .container { background-color: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; width: 100%; max-width: 400px; padding: 30px 20px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); text-align: center; }
+        /* 樣式保持簡潔，修正身份選單布局 */
+        body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background-color: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; width: 100%; max-width: 400px; padding: 30px 20px; text-align: center; }
+        .logo { width: 120px; margin-bottom: 15px; }
         
-        .logo { width: 120px; height: auto; margin-bottom: 20px; }
-        h2 { font-size: 1.4rem; color: #ffffff; margin-bottom: 8px; }
-        .subtitle { font-size: 0.95rem; color: #b388ff; margin-bottom: 24px; }
-        .tip { font-size: 0.85rem; color: #9e9e9e; margin-bottom: 16px; }
-
-        .social-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-bottom: 12px; border: none; transition: opacity 0.2s; }
-        .social-btn:hover { opacity: 0.9; }
-        .google-btn { background-color: #ffffff; color: #000000; }
-        .apple-btn { background-color: #000000; color: #ffffff; border: 1px solid #333; }
-        .social-icon { width: 20px; height: 20px; margin-right: 10px; display: flex; align-items: center; justify-content: center; }
-        .social-icon svg { width: 100%; height: 100%; }
+        /* 身份選擇下拉選單 */
+        select { width: 100%; padding: 10px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 8px; margin-bottom: 20px; }
         
-        .divider { display: flex; align-items: center; color: #666; font-size: 0.85rem; margin: 20px 0; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #333; }
-        .divider::before { margin-right: 10px; } .divider::after { margin-left: 10px; }
-
-        .input-group { margin-bottom: 14px; text-align: left; }
-        .input-group input { width: 100%; padding: 12px 14px; background-color: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #ffffff; }
-        
-        .action-btn { width: 100%; padding: 12px; border-radius: 8px; font-weight: 500; cursor: pointer; border: none; color: #ffffff; margin-top: 6px; }
-        .login-submit-btn { background-color: #2962ff; }
-        .register-submit-btn { background-color: #00c853; }
-
-        .switch-mode { margin-top: 18px; font-size: 0.85rem; color: #b388ff; cursor: pointer; background: none; border: none; text-decoration: underline; }
-        .hidden { display: none; }
+        .social-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: none; cursor: pointer; }
+        .google-btn { background: #fff; color: #000; }
+        .apple-btn { background: #000; color: #fff; border: 1px solid #555; }
+        .input-group input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #3d3d3d; border-radius: 8px; color: #fff; margin-bottom: 10px; }
+        .login-btn { width: 100%; padding: 12px; background: #2962ff; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- 記得確認圖片路徑是否正確 -->
         <img src="7236-removebg-preview.png" alt="Logo" class="logo">
-        
         <h2>電競平台 V5.0.1</h2>
-        <div class="subtitle">【常規用戶（老闆）專區】</div>
-        
-        <div id="auth-form-container">
-            <div class="tip" id="form-tip">請選擇登入方式以開始測驗</div>
 
-            <button class="social-btn google-btn" id="google-login-btn">
-                <span class="social-icon">
-                    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.17 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.13 0 9.87 0 12s.43 3.87 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                </span>
-                使用 Google 帳號登入
-            </button>
+        <!-- 補回身份選單 -->
+        <select id="user-role">
+            <option value="owner">常規用戶（老闆）</option>
+            <option value="member">一般會員</option>
+            <option value="admin">管理員</option>
+        </select>
 
-            <button class="social-btn apple-btn">
-                <span class="social-icon">
-                    <svg viewBox="0 0 24 24" fill="#ffffff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.83 6.07c.57-.69 1.05-1.65.93-2.61-.92.04-2.03.62-2.68 1.35-.55.63-1.03 1.62-.89 2.57 1.03.08 2.07-.51 2.64-1.31z"/></svg>
-                </span>
-                使用 Apple 帳號登入
-            </button>
+        <button class="social-btn google-btn" id="google-login">使用 Google 帳號登入</button>
+        <button class="social-btn apple-btn" id="apple-login">使用 Apple 帳號登入</button>
 
-            <div class="divider">或使用站內 ID</div>
+        <div style="margin: 20px 0; color: #666;">或使用站內 ID</div>
 
-            <div id="login-section">
-                <div class="input-group"><input type="text" placeholder="UID"></div>
-                <div class="input-group"><input type="password" placeholder="Password"></div>
-                <button class="action-btn login-submit-btn">登入</button>
-                <button class="switch-mode" onclick="toggleMode('register')">沒有帳號？切換為註冊模式</button>
-            </div>
-
-            <div id="register-section" class="hidden">
-                <div class="input-group"><input type="text" placeholder="UID"></div>
-                <div class="input-group"><input type="password" placeholder="Password"></div>
-                <button class="action-btn register-submit-btn">註冊</button>
-                <button class="switch-mode" onclick="toggleMode('login')">已有帳號？切換為登入模式</button>
-            </div>
+        <div class="input-group">
+            <input type="text" id="uid" placeholder="UID">
+            <input type="password" id="password" placeholder="Password">
+            <button class="login-btn" onclick="handleLogin()">登入</button>
         </div>
     </div>
 
@@ -90,37 +55,30 @@
             projectId: "rms-srn",
             storageBucket: "rms-srn.firebasestorage.app",
             messagingSenderId: "12210643612",
-            appId: "1:12210643612:web:7339c5785b886ac02d4359",
-            measurementId: "G-1SYC3WZSNX"
+            appId: "1:12210643612:web:7339c5785b886ac02d4359"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        document.getElementById('google-login-btn').addEventListener('click', async () => {
-            const provider = new GoogleAuthProvider();
+        // Google 登入監聽
+        document.getElementById('google-login').onclick = async () => {
             try {
+                const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
-                alert("登入成功：" + result.user.displayName);
-            } catch (error) {
-                alert("登入失敗: " + error.message);
+                alert("登入成功: " + result.user.email);
+            } catch (e) {
+                // 如果登入失敗，這個 alert 會告訴你原因
+                alert("登入失敗，請確認 Firebase 設定是否已啟用 Google 登入，且網域已加入授權清單。錯誤代碼: " + e.message);
+                console.error(e);
             }
-        });
+        };
 
-        window.toggleMode = function(mode) {
-            const loginSec = document.getElementById('login-section');
-            const regSec = document.getElementById('register-section');
-            const tip = document.getElementById('form-tip');
-            if (mode === 'register') {
-                loginSec.classList.add('hidden');
-                regSec.classList.remove('hidden');
-                tip.textContent = '填寫下方資料即可快速註冊';
-            } else {
-                regSec.classList.add('hidden');
-                loginSec.classList.remove('hidden');
-                tip.textContent = '請選擇登入方式以開始測驗';
-            }
-        }
+        window.handleLogin = () => {
+            const role = document.getElementById('user-role').value;
+            const uid = document.getElementById('uid').value;
+            alert(`以 ${role} 身份登入中... UID: ${uid}`);
+        };
     </script>
 </body>
 </html>
