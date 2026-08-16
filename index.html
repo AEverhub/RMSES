@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>RMS 電競平台 - 俱樂部商城與完整時軸紀錄系統</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            width: 520px;
+            text-align: center;
+        }
+        select, input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #2c2c2c;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        button {
+            background-color: #6200ee;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #7c4dff;
+        }
+        .hidden {
+            display: none;
+        }
+        .toggle-mode {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #bb86fc;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .panel-box {
+            background-color: #252525;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .wallet-card {
+            background: linear-gradient(135deg, #2c2c2c, #1f1f1f);
+            border: 1px solid #bb86fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .menu-btn {
+            background-color: #03dac6;
+            color: #000;
+            margin-top: 10px;
+        }
+        .menu-btn:hover {
+            background-color: #018786;
+        }
+        .chat-box {
+            background: #181818;
+            border: 1px solid #444;
+            height: 150px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>RMS 電競平台</h2>
+        
+        <div id="step-role">
+            <label for="role-select" style="display:block; text-align:left; margin-top:10px;">請選擇您的身分：</label>
+            <select id="role-select">
+                <option value="1">1. 常規用戶 (老闆)</option>
+                <option value="2">2. 客服人員</option>
+                <option value="3">3. 俱樂部成員</option>
+                <option value="4">4. 管理員</option>
+            </select>
+            <button id="next-btn">下一步</button>
+        </div>
+
+        <div id="step-auth" class="hidden">
+            <p id="auth-title" style="color: #bb86fc; font-weight: bold;"></p>
+
+            <div id="auth-google" class="hidden">
+                <button id="google-login-btn" style="background-color: #db4437;">使用 Google 帳號登入 (老闆專用)</button>
+            </div>
+
+            <div id="auth-id-pass" class="hidden">
+                <p id="form-mode-title" style="font-size: 14px; color: #aaa;">目前模式：登入</p>
+                <input type="text" id="id-username" placeholder="請輸入站內帳號 (ID)">
+                <input type="password" id="id-password" placeholder="請輸入密碼">
+                <input type="password" id="id-code" placeholder="請輸入內部驗證碼 (僅註冊需要)" class="hidden">
+                <button id="id-submit-btn">登入</button>
+                <div class="toggle-mode" id="toggle-mode-btn">沒有帳號？點此前往註冊</div>
+            </div>
+
+            <div id="auth-admin" class="hidden">
+                <input type="password" id="admin-input" placeholder="請輸入管理員密碼">
+                <button id="verify-admin-btn">確認身分</button>
+            </div>
+
+            <button id="back-btn" style="background-color: #444; margin-top: 15px;">返回上一步</button>
+        </div>
+
+        <div id="app-dashboard" class="hidden"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword 
+        } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            updateDoc,
+            collection,
+            addDoc,
+            getDocs,
+            increment,
+            arrayUnion
+        } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBq9ogxyp03N-kqGreK5s3ua7-Cozhn5kY",
+            authDomain: "rms-srn.firebaseapp.com",
+            projectId: "rms-srn",
+            storageBucket: "rms-srn.firebasestorage.app",
+            messagingSenderId: "12210643612",
+            appId: "1:12210643612:web:7339c5785b886ac02d4359",
+            measurementId: "G-1SYC3WZSNX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        const roleSelect = document.getElementById("role-select");
+        const nextBtn = document.getElementById("next-btn");
+        const backBtn = document.getElementById("back-btn");
+        
+        const stepRole = document.getElementById("step-role");
+        const stepAuth = document.getElementById("step-auth");
+        const authTitle = document.getElementById("auth-title");
+
+        const authGoogle = document.getElementById("auth-google");
+        const authIdPass = document.getElementById("auth-id-pass");
+        const authAdmin = document.getElementById("auth-admin");
+
+        const googleLoginBtn = document.getElementById("google-login-btn");
+        const idUsername = document.getElementById("id-username");
+        const idPassword = document.getElementById("id-password");
+        const idCode = document.getElementById("id-code");
+        const idSubmitBtn = document.getElementById("id-submit-btn");
+        const toggleModeBtn = document.getElementById("toggle-mode-btn");
+        const formModeTitle = document.getElementById("form-mode-title");
+
+        const verifyAdminBtn = document.getElementById("verify-admin-btn");
+        const adminInput = document.getElementById("admin-input");
+        const dashboardDiv = document.getElementById("app-dashboard");
+
+        let selectedRoleText = "";
+        let isRegisterMode = false;
+        let currentUserIdentifier = "";
+        let currentDocId = "";
+
+        nextBtn.addEventListener("click", () => {
+            const role = roleSelect.value;
+            stepRole.classList.add("hidden");
+            stepAuth.classList.remove("hidden");
+
+            authGoogle.classList.add("hidden");
+            authIdPass.classList.add("hidden");
+            authAdmin.classList.add("hidden");
+
+            isRegisterMode = false;
+            updateFormMode();
+            idUsername.value = "";
+            idPassword.value = "";
+            idCode.value = "";
+            adminInput.value = "";
+
+            if (role === "1") {
+                selectedRoleText = "常規用戶";
+                authTitle.innerText = "【常規用戶 (老闆) 登入】";
+                authGoogle.classList.remove("hidden");
+            } else if (role === "2") {
+                selectedRoleText = "客服人員";
+                authTitle.innerText = "【客服人員專區】";
+                authIdPass.classList.remove("hidden");
+            } else if (role === "3") {
+                selectedRoleText = "俱樂部成員";
+                authTitle.innerText = "【俱樂部成員專區】";
+                authIdPass.classList.remove("hidden");
+            } else if (role === "4") {
+                selectedRoleText = "管理員";
+                authTitle.innerText = "【管理員身分驗證】";
+                authAdmin.classList.remove("hidden");
+            }
+        });
+
+        backBtn.addEventListener("click", () => {
+            stepAuth.classList.add("hidden");
+            stepRole.classList.remove("hidden");
+        });
+
+        toggleModeBtn.addEventListener("click", () => {
+            isRegisterMode = !isRegisterMode;
+            updateFormMode();
+        });
+
+        function updateFormMode() {
+            if (isRegisterMode) {
+                formModeTitle.innerText = "目前模式：註冊新帳號";
+                idCode.classList.remove("hidden");
+                idSubmitBtn.innerText = "註冊並登入";
+                toggleModeBtn.innerText = "已有帳號？點此返回登入";
+            } else {
+                formModeTitle.innerText = "目前模式：登入";
+                idCode.classList.add("hidden");
+                idSubmitBtn.innerText = "登入";
+                toggleModeBtn.innerText = "沒有帳號？點此前往註冊";
+            }
+        }
+
+        idSubmitBtn.addEventListener("click", async () => {
+            const username = idUsername.value.trim();
+            const password = idPassword.value.trim();
+            const code = idCode.value.trim();
+
+            if (!username || !password) {
+                alert("請完整填寫帳號與密碼！");
+                return;
+            }
+
+            const fakeEmail = `${username}@rms-platform.com`;
+
+            if (isRegisterMode) {
+                if (code !== "990420") {
+                    alert("內部驗證碼錯誤！");
+                    return;
+                }
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+                    currentUserIdentifier = username;
+                    currentDocId = userCredential.user.uid;
+
+                    await setDoc(doc(db, "users", currentDocId), {
+                        username: username,
+                        role: selectedRoleText,
+                        rank: "士級",
+                        wallet: 0,
+                        orders: [],     
+                        transfers: [],  
+                        createdAt: new Date()
+                    });
+
+                    alert("註冊成功！");
+                    routeToDashboard();
+                } catch (error) {
+                    alert("註冊失敗：" + error.message);
+                }
+            } else {
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, fakeEmail, password);
+                    currentUserIdentifier = username;
+                    currentDocId = userCredential.user.uid;
+                    routeToDashboard();
+                } catch (error) {
+                    alert("登入失敗，請檢查帳號密碼：" + error.message);
+                }
+            }
+        });
+
+        googleLoginBtn.addEventListener("click", async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                currentUserIdentifier = result.user.displayName;
+                currentDocId = result.user.uid;
+
+                const userRef = doc(db, "users", currentDocId);
+                const userSnap = await getDoc(userRef);
+
+                if (!userSnap.exists()) {
+                    await setDoc(userRef, {
+                        username: currentUserIdentifier,
+                        role: "常規用戶",
+                        wallet: 0,
+                        orders: [],
+                        transfers: [],
+                        createdAt: new Date()
+                    });
+                }
+                showBossDashboard();
+            } catch (error) {
+                alert("登入失敗：" + error.message);
+            }
+        });
+
+        verifyAdminBtn.addEventListener("click", () => {
+            if (adminInput.value.trim() === "990420") {
+                showAdminUI();
+            } else {
+                alert("管理員密碼錯誤！");
+            }
+        });
+
+        function routeToDashboard() {
+            if (selectedRoleText === "常規用戶") {
+                showBossDashboard();
+            } else if (selectedRoleText === "客服人員") {
+                showSupportDashboard();
+            } else if (selectedRoleText === "俱樂部成員") {
+                showMemberDashboard();
+            }
+        }
+
+        // 共用轉帳畫面與雙向紀錄同步
+        function renderTransferSection(backCallback) {
+            dashboardDiv.innerHTML = `
+                <h3>【科技結晶轉帳】</h3>
+                <p style="font-size: 13px; color: #aaa;">您可以將手頭的科技結晶轉帳給站內其他用戶。</p>
+                <input type="text" id="transfer-target" placeholder="輸入收款人站內帳號 (ID)">
+                <input type="number" id="transfer-amount" placeholder="輸入轉帳結晶數量" min="1">
+                <button id="execute-transfer" style="background-color: #03dac6; color:#000;">確認轉帳</button>
+                <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+            `;
+            
+            document.querySelectorAll(".back-dashboard").forEach(btn => {
+                btn.addEventListener("click", backCallback);
+            });
+
+            document.getElementById("execute-transfer").addEventListener("click", async () => {
+                const targetUser = document.getElementById("transfer-target").value.trim();
+                const amount = Number(document.getElementById("transfer-amount").value);
+
+                if (!targetUser || !amount || amount <= 0) {
+                    alert("請完整填寫收款人帳號與正確的轉帳數量！");
+                    return;
+                }
+                if (targetUser === currentUserIdentifier) {
+                    alert("不能轉帳給自己！");
+                    return;
+                }
+
+                try {
+                    const senderRef = doc(db, "users", currentDocId);
+                    const senderSnap = await getDoc(senderRef);
+                    const senderWallet = senderSnap.exists() ? (senderSnap.data().wallet || 0) : 0;
+
+                    if (senderWallet < amount) {
+                        alert("您的科技結晶餘額不足！");
+                        return;
+                    }
+
+                    const usersSnap = await getDocs(collection(db, "users"));
+                    let targetDocId = "";
+                    usersSnap.forEach(d => {
+                        if (d.data().username === targetUser) targetDocId = d.id;
+                    });
+
+                    if (!targetDocId) {
+                        alert("找不到此收款人帳號！");
+                        return;
+                    }
+
+                    const transferInfo = {
+                        from: currentUserIdentifier,
+                        to: targetUser,
+                        amount: amount,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    await updateDoc(senderRef, { 
+                        wallet: increment(-amount),
+                        transfers: arrayUnion(transferInfo)
+                    });
+                    await updateDoc(doc(db, "users", targetDocId), { 
+                        wallet: increment(amount),
+                        transfers: arrayUnion(transferInfo)
+                    });
+
+                    await addDoc(collection(db, "transfers"), transferInfo);
+
+                    alert(`成功轉帳 ${amount} 顆科技結晶給 [${targetUser}]！`);
+                    backCallback();
+                } catch (err) {
+                    alert("轉帳失敗：" + err.message);
+                }
+            });
+        }
+
+        // ================= 1. 老闆控制台 =================
+        async function showBossDashboard() {
+            stepAuth.classList.add("hidden");
+            dashboardDiv.classList.remove("hidden");
+
+            const userRef = doc(db, "users", currentDocId);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.exists() ? userSnap.data() : {};
+            const walletBalance = userData.wallet || 0;
+
+            dashboardDiv.innerHTML = `
+                <div class="wallet-card">
+                    <p style="margin: 0; font-size: 14px; color: #aaa;">RMS 帳戶錢包餘額</p>
+                    <h3 style="margin: 5px 0 0 0; color: #03dac6;">${walletBalance.toLocaleString()} 顆 科技結晶</h3>
+                </div>
+                <h3>老闆專區 (歡迎，${currentUserIdentifier})</h3>
+                <button class="menu-btn" id="btn-custom-order">1. 自定義點單發布</button>
+                <button class="menu-btn" id="btn-fixed-order">2. 固定訂單下單 (150結晶)</button>
+                <button class="menu-btn" id="btn-my-orders" style="background-color: #bb86fc; color:#000;">3. 查看我的訂單與對話紀錄</button>
+                <button class="menu-btn" id="btn-transfer" style="background-color: #ff9800; color:#000;">4. 結晶轉帳給他人</button>
+                <button class="menu-btn" id="btn-support" style="background-color: #ff5252; color:#fff;">5. 售後服務 (舉報)</button>
+            `;
+
+            document.getElementById("btn-custom-order").addEventListener("click", () => {
+                dashboardDiv.innerHTML = `
+                    <h3>【發布自定義訂單】</h3>
+                    <label style="display:block; text-align:left; font-size:14px; color:#aaa; margin-top:10px;">選擇指定局型：</label>
+                    <select id="custom-game-mode">
+                        <option value="機局">機局</option>
+                        <option value="絕密局">絕密局</option>
+                    </select>
+                    <input type="number" id="custom-budget" placeholder="輸入預算 (科技結晶數量)">
+                    <textarea id="custom-content" placeholder="輸入詳細訂單內容、遊戲需求等..."></textarea>
+                    <button id="submit-custom">確認發布並扣除結晶</button>
+                    <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+                `;
+                bindBackMenu();
+
+                document.getElementById("submit-custom").addEventListener("click", async () => {
+                    const gameMode = document.getElementById("custom-game-mode").value;
+                    const budget = Number(document.getElementById("custom-budget").value);
+                    const content = document.getElementById("custom-content").value;
+                    if (!budget || !content) {
+                        alert("請完整填寫預算與內容！");
+                        return;
+                    }
+                    if (walletBalance < budget) {
+                        alert("科技結晶餘額不足！");
+                        return;
+                    }
+
+                    try {
+                        const orderData = {
+                            boss: currentUserIdentifier,
+                            type: "自定義訂單",
+                            gameMode: gameMode,
+                            budget: budget,
+                            content: content,
+                            status: "待接單",
+                            chatMessages: [], // 初始化聊天室對話紀錄
+                            createdAt: new Date().toISOString(),
+                            startedAt: null,  // 開始打單時間
+                            completedAt: null // 結單時間
+                        };
+
+                        const docRef = await addDoc(collection(db, "custom_orders"), orderData);
+                        await updateDoc(userRef, { 
+                            wallet: increment(-budget),
+                            orders: arrayUnion({ orderId: docRef.id, ...orderData })
+                        });
+
+                        alert(`扣款成功！自定義訂單已發布。`);
+                        showBossDashboard();
+                    } catch (e) {
+                        alert("發布失敗：" + e.message);
+                    }
+                });
+            });
+
+            document.getElementById("btn-fixed-order").addEventListener("click", () => {
+                dashboardDiv.innerHTML = `
+                    <h3>【固定訂單下單】</h3>
+                    <div class="panel-box">
+                        <p><strong>項目：</strong> 積分牌位急速代打 (金牌 ➔ 鑽石)</p>
+                        <p><strong>標準價格：</strong> 150 顆科技結晶</p>
+                        <label style="display:block; text-align:left; font-size:14px; color:#aaa; margin-top:10px;">選擇指定局型：</label>
+                        <select id="fixed-game-mode">
+                            <option value="機局">機局</option>
+                            <option value="絕密局">絕密局</option>
+                        </select>
+                        <button id="order-fixed-1" style="margin-top:15px;">立即下單 (扣除 150 結晶)</button>
+                    </div>
+                    <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+                `;
+                bindBackMenu();
+
+                document.getElementById("order-fixed-1").addEventListener("click", async () => {
+                    const fixedPrice = 150;
+                    const gameMode = document.getElementById("fixed-game-mode").value;
+
+                    if (walletBalance < fixedPrice) {
+                        alert("科技結晶餘額不足 150 顆！");
+                        return;
+                    }
+
+                    try {
+                        const orderData = {
+                            boss: currentUserIdentifier,
+                            type: "固定訂單",
+                            item: "積分牌位急速代打",
+                            gameMode: gameMode,
+                            price: fixedPrice,
+                            status: "待接單",
+                            chatMessages: [],
+                            createdAt: new Date().toISOString(),
+                            startedAt: null,
+                            completedAt: null
+                        };
+
+                        const docRef = await addDoc(collection(db, "normal_orders"), orderData);
+                        await updateDoc(userRef, { 
+                            wallet: increment(-fixedPrice),
+                            orders: arrayUnion({ orderId: docRef.id, ...orderData })
+                        });
+
+                        alert(`下單成功！`);
+                        showBossDashboard();
+                    } catch (e) {
+                        alert("下單失敗：" + e.message);
+                    }
+                });
+            });
+
+            // 查看個人訂單與對話、時間軸紀錄
+            document.getElementById("btn-my-orders").addEventListener("click", () => {
+                let historyHtml = `<h3>【我的訂單與對話紀錄】</h3>`;
+                const myOrders = userData.orders || [];
+
+                if (myOrders.length === 0) {
+                    historyHtml += `<div class="panel-box">尚無訂單紀錄。</div>`;
+                } else {
+                    myOrders.forEach(o => {
+                        let chatHtml = "";
+                        (o.chatMessages || []).forEach(msg => {
+                            chatHtml += `<div><strong>${msg.sender}:</strong> ${msg.text} <span style="font-size:11px;color:#aaa;">(${new Date(msg.time).toLocaleTimeString()})</span></div>`;
+                        });
+
+                        historyHtml += `
+                            <div class="panel-box">
+                                <p><strong>類型：</strong> ${o.type || o.item} (${o.gameMode})</p>
+                                <p><strong>金額：</strong> ${o.price || o.budget} 顆</p>
+                                <p><strong>狀態：</strong> <span style="color:#03dac6;">${o.status}</span></p>
+                                <p style="font-size:12px; color:#aaa;">下單時間：${new Date(o.createdAt).toLocaleString()}</p>
+                                <p style="font-size:12px; color:#aaa;">開始打單：${o.startedAt ? new Date(o.startedAt).toLocaleString() : '尚未開始'}</p>
+                                <p style="font-size:12px; color:#aaa;">結單時間：${o.completedAt ? new Date(o.completedAt).toLocaleString() : '尚未完成'}</p>
+                                <p><strong>訂單聊天室對話：</strong></p>
+                                <div class="chat-box">${chatHtml || '尚無對話'}</div>
+                                <input type="text" id="chat-input-${o.orderId}" placeholder="輸入對話訊息..." style="margin-top:5px;">
+                                <button class="send-chat-btn" data-id="${o.orderId}" data-type="${o.type === '自定義訂單' ? 'custom_orders' : 'normal_orders'}" data-boss="${o.boss}" style="margin-top:5px; background:#03dac6; color:#000;">發送訊息</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                historyHtml += `<button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>`;
+                dashboardDiv.innerHTML = historyHtml;
+                bindBackMenu();
+                bindChatEvents();
+            });
+
+            document.getElementById("btn-transfer").addEventListener("click", () => {
+                renderTransferSection(showBossDashboard);
+            });
+
+            document.getElementById("btn-support").addEventListener("click", () => {
+                dashboardDiv.innerHTML = `
+                    <h3>【售後服務與糾紛舉報】</h3>
+                    <input type="text" id="report-order-id" placeholder="輸入相關訂單編號或項目">
+                    <textarea id="report-reason" placeholder="請詳細描述遇到的問題..."></textarea>
+                    <button id="submit-report" style="background-color: #ff5252; color:#fff;">提交舉報至客服</button>
+                    <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+                `;
+                bindBackMenu();
+
+                document.getElementById("submit-report").addEventListener("click", async () => {
+                    const orderId = document.getElementById("report-order-id").value;
+                    const reason = document.getElementById("report-reason").value;
+                    if (!orderId || !reason) {
+                        alert("請填寫訂單編號與舉報原因！");
+                        return;
+                    }
+                    try {
+                        await addDoc(collection(db, "reports"), {
+                            boss: currentUserIdentifier,
+                            orderId: orderId,
+                            reason: reason,
+                            status: "處理中",
+                            createdAt: new Date().toISOString()
+                        });
+                        alert("舉報已送出！");
+                        showBossDashboard();
+                    } catch (e) {
+                        alert("提交失敗：" + e.message);
+                    }
+                });
+            });
+        }
+
+        // ================= 2. 俱樂部成員專區 =================
+        async function showMemberDashboard() {
+            stepAuth.classList.add("hidden");
+            dashboardDiv.classList.remove("hidden");
+
+            const userRef = doc(db, "users", currentDocId);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.exists() ? userSnap.data() : {};
+            const myRank = userData.rank || "士級";
+            const myWallet = userData.wallet || 0;
+
+            dashboardDiv.innerHTML = `
+                <div class="wallet-card">
+                    <p style="margin: 0; font-size: 14px; color: #aaa;">俱樂部成員帳戶 (階級：<span style="color:#03dac6;">${myRank}</span>)</p>
+                    <h3 style="margin: 5px 0 0 0; color: #03dac6;">${myWallet.toLocaleString()} 顆 科技結晶</h3>
+                </div>
+                <h3>俱樂部成員大廳</h3>
+                <button class="menu-btn" id="btn-view-orders">1. 查看可接訂單大廳</button>
+                <button class="menu-btn" id="btn-my-records" style="background-color: #bb86fc; color:#000;">2. 查看我的接單、時軸與對話紀錄</button>
+                <button class="menu-btn" id="btn-shop" style="background-color: #ff9800; color:#000;">3. 結晶系統商城</button>
+                <button class="menu-btn" id="btn-transfer" style="background-color: #03dac6; color:#000;">4. 結晶轉帳給他人</button>
+                <button class="menu-btn" id="btn-payout" style="background-color: #e91e63; color:#fff;">5. 申請工資結清 (提領)</button>
+            `;
+
+            // 接單大廳
+            document.getElementById("btn-view-orders").addEventListener("click", async () => {
+                dashboardDiv.innerHTML = `<h3>載入中...</h3>`;
+                const normalSnap = await getDocs(collection(db, "normal_orders"));
+                const customSnap = await getDocs(collection(db, "custom_orders"));
+
+                let ordersHtml = `<h3>【可接訂單列表】</h3>`;
+                let hasOrder = false;
+
+                normalSnap.forEach(docItem => {
+                    const data = docItem.data();
+                    if (data.status === "待接單") {
+                        hasOrder = true;
+                        ordersHtml += `
+                            <div class="panel-box">
+                                <p><strong>類型：</strong> 固定訂單 (${data.item})</p>
+                                <p><strong>指定局型：</strong> <span style="color:#bb86fc;">${data.gameMode}</span></p>
+                                <p><strong>金額：</strong> ${data.price} 顆結晶</p>
+                                <button class="take-order-btn" data-id="${docItem.id}" data-type="normal_orders" data-boss="${data.boss}" data-price="${data.price}">接取此單</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                customSnap.forEach(docItem => {
+                    const data = docItem.data();
+                    if (data.status === "待接單") {
+                        hasOrder = true;
+                        ordersHtml += `
+                            <div class="panel-box">
+                                <p><strong>類型：</strong> 自定義訂單 (老闆: ${data.boss})</p>
+                                <p><strong>內容：</strong> ${data.content}</p>
+                                <p><strong>指定局型：</strong> <span style="color:#bb86fc;">${data.gameMode}</span></p>
+                                <p><strong>預算：</strong> ${data.budget} 顆結晶</p>
+                                <button class="take-order-btn" data-id="${docItem.id}" data-type="custom_orders" data-boss="${data.boss}" data-price="${data.budget}">接取此單</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasOrder) {
+                    ordersHtml += `<div class="panel-box">目前無待接訂單。</div>`;
+                }
+
+                ordersHtml += `<button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>`;
+                dashboardDiv.innerHTML = ordersHtml;
+
+                document.querySelectorAll(".take-order-btn").forEach(btn => {
+                    btn.addEventListener("click", async (e) => {
+                        const orderId = e.target.getAttribute("data-id");
+                        const orderType = e.target.getAttribute("data-type");
+                        const bossName = e.target.getAttribute("data-boss");
+                        const price = Number(e.target.getAttribute("data-price"));
+
+                        try {
+                            const startTime = new Date().toISOString();
+
+                            // 1. 更新全域訂單 (記錄為進行中/待審核並設定開始打單時間)
+                            await updateDoc(doc(db, orderType, orderId), {
+                                status: "進行中",
+                                taker: currentUserIdentifier,
+                                startedAt: startTime
+                            });
+
+                            // 2. 成員個人紀錄
+                            const orderRecord = {
+                                orderId: orderId,
+                                boss: bossName,
+                                price: price,
+                                gameMode: "機局",
+                                status: "進行中",
+                                chatMessages: [],
+                                startedAt: startTime,
+                                completedAt: null
+                            };
+
+                            await updateDoc(userRef, {
+                                orders: arrayUnion(orderRecord)
+                            });
+
+                            // 3. 同步老闆個人紀錄
+                            const usersSnap = await getDocs(collection(db, "users"));
+                            for (let userDoc of usersSnap.docs) {
+                                if (userDoc.data().username === bossName) {
+                                    const bossData = userDoc.data();
+                                    const updatedOrders = (bossData.orders || []).map(o => {
+                                        if (o.orderId === orderId) {
+                                            return { ...o, status: "進行中", taker: currentUserIdentifier, startedAt: startTime };
+                                        }
+                                        return o;
+                                    });
+                                    await updateDoc(doc(db, "users", userDoc.id), { orders: updatedOrders });
+                                    break;
+                                }
+                            }
+
+                            alert(`接單成功！已記錄「開始打單時間」。`);
+                            showMemberDashboard();
+                        } catch (err) {
+                            alert("接單失敗：" + err.message);
+                        }
+                    });
+                });
+
+                bindBackMenuForMember();
+            });
+
+            // 查看成員個人紀錄 (含時間軸與對話)
+            document.getElementById("btn-my-records").addEventListener("click", () => {
+                let historyHtml = `<h3>【我的接單與對話紀錄】</h3>`;
+                const myOrders = userData.orders || [];
+
+                if (myOrders.length === 0) {
+                    historyHtml += `<div class="panel-box">尚無接單紀錄。</div>`;
+                } else {
+                    myOrders.forEach(o => {
+                        let chatHtml = "";
+                        (o.chatMessages || []).forEach(msg => {
+                            chatHtml += `<div><strong>${msg.sender}:</strong> ${msg.text} <span style="font-size:11px;color:#aaa;">(${new Date(msg.time).toLocaleTimeString()})</span></div>`;
+                        });
+
+                        let actionBtn = "";
+                        if (o.status === "進行中") {
+                            actionBtn = `<button class="complete-order-btn" data-id="${o.orderId}" data-boss="${o.boss}" data-type="${o.price ? 'normal_orders' : 'custom_orders'}" style="margin-top:10px; background:#e91e63; color:#fff;">按下結單</button>`;
+                        }
+
+                        historyHtml += `
+                            <div class="panel-box">
+                                <p><strong>老闆：</strong> ${o.boss}</p>
+                                <p><strong>金額：</strong> ${o.price || o.budget} 顆結晶</p>
+                                <p><strong>狀態：</strong> <span style="color:#03dac6;">${o.status}</span></p>
+                                <p style="font-size:12px; color:#aaa;">開始打單時間：${o.startedAt ? new Date(o.startedAt).toLocaleString() : '未開始'}</p>
+                                <p style="font-size:12px; color:#aaa;">結單時間：${o.completedAt ? new Date(o.completedAt).toLocaleString() : '尚未結單'}</p>
+                                <p><strong>訂單聊天室對話：</strong></p>
+                                <div class="chat-box">${chatHtml || '尚無對話'}</div>
+                                <input type="text" id="chat-input-${o.orderId}" placeholder="輸入對話訊息..." style="margin-top:5px;">
+                                <button class="send-chat-btn" data-id="${o.orderId}" data-type="${o.price ? 'normal_orders' : 'custom_orders'}" data-boss="${o.boss}" style="margin-top:5px; background:#03dac6; color:#000;">發送訊息</button>
+                                ${actionBtn}
+                            </div>
+                        `;
+                    });
+                }
+
+                historyHtml += `<button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>`;
+                dashboardDiv.innerHTML = historyHtml;
+                bindBackMenuForMember();
+                bindChatEvents();
+                bindCompleteEvents();
+            });
+
+            document.getElementById("btn-shop").addEventListener("click", () => {
+                dashboardDiv.innerHTML = `
+                    <h3>【結晶系統商城】</h3>
+                    <div class="panel-box">
+                        <p><strong>商品 A：</strong> 優先置頂接單特權 (1天)</p>
+                        <p><strong>價格：</strong> 20 顆結晶</p>
+                        <button class="buy-item-btn" data-cost="20" data-name="優先置頂接單特權">購買</button>
+                    </div>
+                    <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+                `;
+                bindBackMenuForMember();
+            });
+
+            document.getElementById("btn-transfer").addEventListener("click", () => {
+                renderTransferSection(showMemberDashboard);
+            });
+
+            document.getElementById("btn-payout").addEventListener("click", () => {
+                dashboardDiv.innerHTML = `
+                    <h3>【申請工資結清 (提領)】</h3>
+                    <input type="number" id="payout-amount" placeholder="輸入欲結清的結晶數量" max="${myWallet}">
+                    <input type="text" id="payout-account" placeholder="填寫您的銀行帳號或街口/LinePay資訊">
+                    <button id="submit-payout" style="background-color: #e91e63; color:#fff;">送出結清申請</button>
+                    <button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>
+                `;
+                bindBackMenuForMember();
+            });
+        }
+
+        // 綁定聊天發送功能 (同步更新雙方及 Firebase)
+        function bindChatEvents() {
+            document.querySelectorAll(".send-chat-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const orderId = e.target.getAttribute("data-id");
+                    const orderType = e.target.getAttribute("data-type");
+                    const bossName = e.target.getAttribute("data-boss");
+                    const inputField = document.getElementById(`chat-input-${orderId}`);
+                    const text = inputField.value.trim();
+
+                    if (!text) return;
+
+                    const messageObj = {
+                        sender: currentUserIdentifier,
+                        text: text,
+                        time: new Date().toISOString()
+                    };
+
+                    try {
+                        // 1. 更新全域訂單聊天室
+                        const orderRef = doc(db, orderType, orderId);
+                        const orderSnap = await getDoc(orderRef);
+                        const currentMessages = orderSnap.exists() ? (orderSnap.data().chatMessages || []) : [];
+                        await updateDoc(orderRef, { chatMessages: [...currentMessages, messageObj] });
+
+                        // 2. 同步更新發送者個人紀錄中的該訂單對話
+                        const myUserRef = doc(db, "users", currentDocId);
+                        const mySnap = await getDoc(myUserRef);
+                        const myOrders = (mySnap.data().orders || []).map(o => {
+                            if (o.orderId === orderId) {
+                                return { ...o, chatMessages: [...(o.chatMessages || []), messageObj] };
+                            }
+                            return o;
+                        });
+                        await updateDoc(myUserRef, { orders: myOrders });
+
+                        // 3. 尋找對方（若發送者是老闆，找成員；反之找老闆）並同步更新
+                        const usersSnap = await getDocs(collection(db, "users"));
+                        for (let userDoc of usersSnap.docs) {
+                            const d = userDoc.data();
+                            // 尋找對應的參與者更新聊天紀錄
+                            if (d.orders) {
+                                let hasThisOrder = false;
+                                const updatedOtherOrders = d.orders.map(o => {
+                                    if (o.orderId === orderId) {
+                                        hasThisOrder = true;
+                                        return { ...o, chatMessages: [...(o.chatMessages || []), messageObj] };
+                                    }
+                                    return o;
+                                });
+                                if (hasThisOrder && userDoc.id !== currentDocId) {
+                                    await updateDoc(doc(db, "users", userDoc.id), { orders: updatedOtherOrders });
+                                }
+                            }
+                        }
+
+                        inputField.value = "";
+                        // 重新整理頁面以顯示最新訊息
+                        if (selectedRoleText === "常規用戶") showBossDashboard();
+                        else if (selectedRoleText === "俱樂部成員") showMemberDashboard();
+                    } catch (err) {
+                        alert("發送訊息失敗：" + err.message);
+                    }
+                });
+            });
+        }
+
+        // 綁定成員「按下結單」功能 (記錄結單時間並轉為待審核)
+        function bindCompleteEvents() {
+            document.querySelectorAll(".complete-order-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const orderId = e.target.getAttribute("data-id");
+                    const bossName = e.target.getAttribute("data-boss");
+                    const orderType = e.target.getAttribute("data-type");
+
+                    try {
+                        const completedTime = new Date().toISOString();
+
+                        // 1. 更新全域訂單狀態與結單時間
+                        await updateDoc(doc(db, orderType, orderId), {
+                            status: "待審核",
+                            completedAt: completedTime
+                        });
+
+                        // 2. 更新成員個人紀錄
+                        const myRef = doc(db, "users", currentDocId);
+                        const mySnap = await getDoc(myRef);
+                        const myOrders = (mySnap.data().orders || []).map(o => {
+                            if (o.orderId === orderId) {
+                                return { ...o, status: "待審核", completedAt: completedTime };
+                            }
+                            return o;
+                        });
+                        await updateDoc(myRef, { orders: myOrders });
+
+                        // 3. 同步老闆個人紀錄
+                        const usersSnap = await getDocs(collection(db, "users"));
+                        for (let userDoc of usersSnap.docs) {
+                            if (userDoc.data().username === bossName) {
+                                const bossData = userDoc.data();
+                                const bossOrders = (bossData.orders || []).map(o => {
+                                    if (o.orderId === orderId) {
+                                        return { ...o, status: "待審核", completedAt: completedTime };
+                                    }
+                                    return o;
+                                });
+                                await updateDoc(doc(db, "users", userDoc.id), { orders: bossOrders });
+                                break;
+                            }
+                        }
+
+                        alert("已成功按下結單！訂單已進入「待審核」狀態，並已記錄「結單時間」。");
+                        showMemberDashboard();
+                    } catch (err) {
+                        alert("結單操作失敗：" + err.message);
+                    }
+                });
+            });
+        }
+
+        function bindBackMenu() {
+            document.querySelectorAll(".back-dashboard").forEach(btn => {
+                btn.addEventListener("click", () => showBossDashboard());
+            });
+        }
+
+        function bindBackMenuForMember() {
+            document.querySelectorAll(".back-dashboard").forEach(btn => {
+                btn.addEventListener("click", () => showMemberDashboard());
+            });
+        }
+
+        // ================= 3. 客服人員專區 =================
+        async function showSupportDashboard() {
+            stepAuth.classList.add("hidden");
+            dashboardDiv.classList.remove("hidden");
+
+            const userSnap = await getDoc(doc(db, "users", currentDocId));
+            const myWallet = userSnap.exists() ? (userSnap.data().wallet || 0) : 0;
+
+            dashboardDiv.innerHTML = `
+                <div class="wallet-card">
+                    <p style="margin: 0; font-size: 14px; color: #aaa;">客服人員帳戶 (訂單分潤 1%)</p>
+                    <h3 style="margin: 5px 0 0 0; color: #03dac6;">${myWallet.toLocaleString()} 顆 科技結晶</h3>
+                </div>
+                <h3>客服人員工作區</h3>
+                <button class="menu-btn" id="btn-audit-orders">1. 審核待結單並撥發結晶</button>
+                <button class="menu-btn" id="btn-transfer" style="background-color: #03dac6; color:#000;">2. 結晶轉帳給他人</button>
+            `;
+
+            document.getElementById("btn-audit-orders").addEventListener("click", async () => {
+                dashboardDiv.innerHTML = `<h3>載入中...</h3>`;
+                const normalSnap = await getDocs(collection(db, "normal_orders"));
+                const customSnap = await getDocs(collection(db, "custom_orders"));
+
+                let auditHtml = `<h3>【待審核結單列表】</h3>`;
+                let hasReview = false;
+
+                normalSnap.forEach(docItem => {
+                    const data = docItem.data();
+                    if (data.status === "待審核") {
+                        hasReview = true;
+                        auditHtml += `
+                            <div class="panel-box">
+                                <p><strong>老闆：</strong> ${data.boss}</p>
+                                <p><strong>項目：</strong> ${data.item}</p>
+                                <p><strong>接單成員：</strong> <span style="color:#03dac6;">${data.taker}</span></p>
+                                <p><strong>金額：</strong> ${data.price} 顆</p>
+                                <p style="font-size:11px;color:#aaa;">開始時間: ${data.startedAt ? new Date(data.startedAt).toLocaleString() : '無'}</p>
+                                <p style="font-size:11px;color:#aaa;">結單時間: ${data.completedAt ? new Date(data.completedAt).toLocaleString() : '無'}</p>
+                                <button class="approve-btn" data-id="${docItem.id}" data-type="normal_orders" data-boss="${data.boss}" data-price="${data.price}" data-taker="${data.taker}">確認完成並撥款</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                customSnap.forEach(docItem => {
+                    const data = docItem.data();
+                    if (data.status === "待審核") {
+                        hasReview = true;
+                        auditHtml += `
+                            <div class="panel-box">
+                                <p><strong>老闆：</strong> ${data.boss}</p>
+                                <p><strong>內容：</strong> ${data.content}</p>
+                                <p><strong>接單成員：</strong> <span style="color:#03dac6;">${data.taker}</span></p>
+                                <p><strong>預算：</strong> ${data.budget} 顆</p>
+                                <p style="font-size:11px;color:#aaa;">開始時間: ${data.startedAt ? new Date(data.startedAt).toLocaleString() : '無'}</p>
+                                <p style="font-size:11px;color:#aaa;">結單時間: ${data.completedAt ? new Date(data.completedAt).toLocaleString() : '無'}</p>
+                                <button class="approve-btn" data-id="${docItem.id}" data-type="custom_orders" data-boss="${data.boss}" data-price="${data.budget}" data-taker="${data.taker}">確認完成並撥款</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasReview) {
+                    auditHtml += `<div class="panel-box">目前沒有需要審核的訂單。</div>`;
+                }
+
+                auditHtml += `<button class="back-dashboard" style="background:#444; margin-top:10px;">返回選單</button>`;
+                dashboardDiv.innerHTML = auditHtml;
+
+                document.querySelectorAll(".approve-btn").forEach(btn => {
+                    btn.addEventListener("click", async (e) => {
+                        const orderId = e.target.getAttribute("data-id");
+                        const orderType = e.target.getAttribute("data-type");
+                        const bossName = e.target.getAttribute("data-boss");
+                        const price = Number(e.target.getAttribute("data-price"));
+                        const takerName = e.target.getAttribute("data-taker");
+
+                        try {
+                            const usersSnap = await getDocs(collection(db, "users"));
+                            let takerDocId = "";
+                            let takerRank = "士級";
+                            let bossDocId = "";
+
+                            usersSnap.forEach(userDoc => {
+                                const d = userDoc.data();
+                                if (d.username === takerName) {
+                                    takerDocId = userDoc.id;
+                                    takerRank = d.rank || "士級";
+                                }
+                                if (d.username === bossName) {
+                                    bossDocId = userDoc.id;
+                                }
+                            });
+
+                            let memberRate = 0.40;
+                            if (takerRank === "將級") memberRate = 0.60;
+                            else if (takerRank === "校級") memberRate = 0.50;
+
+                            const memberEarnings = price * memberRate;
+                            const supportEarnings = price * 0.01;
+
+                            await updateDoc(doc(db, orderType, orderId), { status: "已完成" });
+
+                            const takerSnap = await getDoc(doc(db, "users", takerDocId));
+                            const takerOrders = (takerSnap.data().orders || []).map(o => {
+                                if (o.orderId === orderId) return { ...o, status: "已完成" };
+                                return o;
+                            });
+                            await updateDoc(doc(db, "users", takerDocId), {
+                                wallet: increment(memberEarnings),
+                                orders: takerOrders
+                            });
+
+                            if (bossDocId) {
+                                const bossSnap = await getDoc(doc(db, "users", bossDocId));
+                                const bossOrders = (bossSnap.data().orders || []).map(o => {
+                                    if (o.orderId === orderId) return { ...o, status: "已完成" };
+                                    return o;
+                                });
+                                await updateDoc(doc(db, "users", bossDocId), { orders: bossOrders });
+                            }
+
+                            await updateDoc(doc(db, "users", currentDocId), {
+                                wallet: increment(supportEarnings)
+                            });
+
+                            alert(`審核完成！款項與狀態已全數同步更新。`);
+                            showSupportDashboard();
+                        } catch (err) {
+                            alert("審核失敗：" + err.message);
+                        }
+                    });
+                });
+
+                document.querySelectorAll(".back-dashboard").forEach(b => {
+                    b.addEventListener("click", () => showSupportDashboard());
+                });
+            });
+
+            document.getElementById("btn-transfer").addEventListener("click", () => {
+                renderTransferSection(showSupportDashboard);
+            });
+        }
+
+        // ================= 4. 管理員後台介面 =================
+        function showAdminUI() {
+            stepAuth.classList.add("hidden");
+            dashboardDiv.classList.remove("hidden");
+
+            dashboardDiv.innerHTML = `
+                <h3>系統管理員後台</h3>
+                
+                <div class="panel-box">
+                    <h4>1. 調整俱樂部成員階級</h4>
+                    <input type="text" id="target-user-rank" placeholder="輸入成員站內帳號">
+                    <select id="target-rank">
+                        <option value="將級">將級 (60% 分潤)</option>
+                        <option value="校級">校級 (50% 分潤)</option>
+                        <option value="尉級">尉級 (40% 分潤)</option>
+                        <option value="士級">士級 (40% 分潤)</option>
+                    </select>
+                    <button id="update-rank-btn" style="margin-top:10px;">確認修改階級</button>
+                </div>
+
+                <div class="panel-box" style="margin-top: 15px;">
+                    <h4>2. 幫用戶錢包加值</h4>
+                    <input type="text" id="target-user-wallet" placeholder="輸入用戶帳號">
+                    <input type="number" id="topup-amount" placeholder="輸入加值結晶數量">
+                    <button id="admin-topup-btn" style="background-color: #03dac6; color: #000; margin-top:10px;">確認加值結晶</button>
+                </div>
+
+                <div class="panel-box" style="margin-top: 15px;">
+                    <h4>3. 管理員功能</h4>
+                    <button class="menu-btn" id="admin-transfer-btn">結晶轉帳中心</button>
+                </div>
+            `;
+
+            document.getElementById("update-rank-btn").addEventListener("click", async () => {
+                const targetUser = document.getElementById("target-user-rank").value.trim();
+                const newRank = document.getElementById("target-rank").value;
+                if (!targetUser) return alert("請輸入目標帳號！");
+                try {
+                    const usersSnap = await getDocs(collection(db, "users"));
+                    let targetDocId = "";
+                    usersSnap.forEach(d => { if (d.data().username === targetUser) targetDocId = d.id; });
+                    if (!targetDocId) return alert("找不到帳號！");
+                    await updateDoc(doc(db, "users", targetDocId), { rank: newRank });
+                    alert(`成功將 [${targetUser}] 調整為：${newRank}`);
+                } catch (error) {
+                    alert("更新失敗：" + error.message);
+                }
+            });
+
+            document.getElementById("admin-topup-btn").addEventListener("click", async () => {
+                const targetUser = document.getElementById("target-user-wallet").value.trim();
+                const amount = Number(document.getElementById("topup-amount").value);
+                if (!targetUser || !amount || amount <= 0) return alert("請輸入有效數值！");
+                try {
+                    const usersSnap = await getDocs(collection(db, "users"));
+                    let targetDocId = "";
+                    usersSnap.forEach(d => { if (d.data().username === targetUser) targetDocId = d.id; });
+                    if (!targetDocId) return alert("找不到帳號！");
+                    await updateDoc(doc(db, "users", targetDocId), { wallet: increment(amount) });
+                    alert(`成功加值！`);
+                } catch (error) {
+                    alert("失敗：" + error.message);
+                }
+            });
+
+            document.getElementById("admin-transfer-btn").addEventListener("click", () => {
+                renderTransferSection(showAdminUI);
+            });
+        }
+    </script>
+</body>
+</html>
