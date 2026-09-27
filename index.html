@@ -91,7 +91,7 @@
             font-weight: 700;
         }
 
-        /* 印章預覽區（棋盤格代表透明） */
+        /* 印章預覽區（棋盤格代表透明底） */
         .preview-card {
             background: #ffffff;
             border-radius: 16px;
@@ -199,8 +199,8 @@
 
     <div class="control-card">
         <div class="form-group">
-            <label for="sealText">印章文字（自動依字數排版並套用篆體）</label>
-            <input type="text" id="sealText" class="form-control" value="行政院印" placeholder="請輸入印章文字">
+            <label for="sealText">印章文字（自動由右上至左下直排）</label>
+            <input type="text" id="sealText" class="form-control" value="吉祥如意" placeholder="請輸入印章文字">
         </div>
     </div>
 
@@ -210,33 +210,35 @@
     </div>
 
     <script>
-        const DEFAULT_TEXT = "行政院印";
+        // 設定安全的預設文字，避免任何爭議
+        const DEFAULT_TEXT = "吉祥如意";
 
         document.getElementById('agreeBtn').addEventListener('click', () => {
             document.getElementById('termsModal').style.display = 'none';
         });
 
         function loadSavedText() {
-            return localStorage.getItem('exact_seal_text') || DEFAULT_TEXT;
+            return localStorage.getItem('safe_seal_text') || DEFAULT_TEXT;
         }
 
         function saveText(text) {
-            localStorage.setItem('exact_seal_text', text);
+            localStorage.setItem('safe_seal_text', text);
         }
 
-        // 精確繪製紅框白底紅字 (完美還原圖片2結構)
+        // 精確繪製紅框白底紅字 (完全符合：右上向下、排滿往左換行)
         function buildExactSealSVG(text) {
             const rawChars = text.trim() || "印";
             const chars = rawChars.split('');
             const count = chars.length;
 
-            let cols = 2;
-            if (count > 4 && count <= 9) cols = 3;
-            else if (count > 9) cols = 4;
+            // 動態計算行數與列數
+            let rows = 2;
+            if (count > 4 && count <= 9) rows = 3;
+            else if (count > 9) rows = 4;
 
-            const rows = Math.ceil(count / cols);
+            const cols = Math.ceil(count / rows);
 
-            // 中央白底區域範圍 (原圖中間白色正方形)
+            // 中央白底區域範圍
             const innerSize = 220;
             const innerX = 40;
             const innerY = 40;
@@ -247,14 +249,14 @@
 
             let textSvg = '';
             chars.forEach((c, i) => {
-                // 由右至左、由上至下的傳統縱排
-                const col = (cols - 1) - (i % cols);
-                const row = Math.floor(i / cols);
+                // 排版規則：右上角開始往下寫 (row++), 寫滿一列後往左換行 (col--)
+                const row = i % rows;                          // 0, 1, 2... (由上往下)
+                const col = (cols - 1) - Math.floor(i / rows); // cols-1, cols-2... (由右往左)
 
                 const x = innerX + col * cellW + cellW / 2;
                 const y = innerY + row * cellH + cellH / 2 + (fontSize * 0.08);
 
-                textSvg += `<text x="${x}" y="${y}" font-size="${fontSize}" font-family="'Ma Shan Zheng', cursive" fill="#b01c1c" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
+                textSvg += `<text x="${x}" y="${y}" font-size="${fontSize}" font-family="'Ma Shan Zheng', cursive, 'Noto Serif CJK TC'" fill="#b01c1c" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
             });
 
             return `
@@ -262,10 +264,10 @@
                 <!-- 1. 最外圍滿版紅框 (外底) -->
                 <rect x="0" y="0" width="300" height="300" fill="#b01c1c" />
                 
-                <!-- 2. 中間白色實心正方形 (圖片2白底) -->
+                <!-- 2. 中間白色實心正方形 (白底) -->
                 <rect x="40" y="40" width="220" height="220" fill="#ffffff" />
                 
-                <!-- 3. 文字內容 (紅色篆體) -->
+                <!-- 3. 文字內容 (紅色篆體風格/右上至左下直排) -->
                 ${textSvg}
             </svg>`;
         }
@@ -311,7 +313,7 @@
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 const a = document.createElement('a');
-                a.download = 'seal_exact.png';
+                a.download = 'seal_export.png';
                 a.href = canvas.toDataURL('image/png');
                 a.click();
                 URL.revokeObjectURL(url);
