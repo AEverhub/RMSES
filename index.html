@@ -2,369 +2,325 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>印章與獎狀產生器</title>
-    <!-- 載入古風/篆體風格字型與楷體 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>朱文印生成器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-        body { display: flex; height: 100vh; background: #eef2f5; color: #333; overflow: hidden; }
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f2f2f7;
+            color: #1c1c1e;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         /* 條款彈窗遮罩 */
         #termsModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
         }
-        .modal-content {
-            background: #fff; width: 500px; max-width: 90%; padding: 30px;
-            border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+
+        .modal-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 360px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .modal-content h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.3rem; }
-        .modal-content p { font-size: 0.9rem; line-height: 1.6; color: #555; margin-bottom: 20px; }
+
+        .modal-card h3 {
+            font-size: 1.2rem;
+            color: #b01c1c;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .modal-card p {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #4a4a4a;
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        .modal-card .warning-list {
+            font-size: 0.82rem;
+            color: #b01c1c;
+            margin-bottom: 20px;
+            padding-left: 18px;
+        }
+
         .modal-btn {
-            width: 100%; padding: 12px; background: #1a73e8; color: white;
-            border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;
+            width: 100%;
+            padding: 14px;
+            background: #007aff;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
         }
-        .modal-btn:hover { background: #1557b0; }
 
-        /* 控制側邊欄 */
-        .sidebar { width: 360px; background: #fff; padding: 20px; border-right: 1px solid #ddd; overflow-y: auto; }
-        .sidebar h2 { font-size: 1.1rem; color: #1a73e8; margin: 15px 0 8px 0; border-bottom: 2px solid #1a73e8; padding-bottom: 4px; }
-        .sidebar h2:first-child { margin-top: 0; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        .btn { width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 4px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; font-weight: bold; }
-        .btn:hover { background: #1557b0; }
-        .btn-success { background: #28a745; }
-        .btn-success:hover { background: #218838; }
-        .btn-warning { background: #ffc107; color: #333; margin-top: 5px; }
-        .btn-warning:hover { background: #e0a800; }
-
-        /* 預覽主要區域 */
-        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: auto; }
-        
-        /* 獎狀容器 (比例縮放) */
-        .certificate-card {
-            width: 700px; height: 500px; background: #fff;
-            border: 12px double #c59b27; padding: 30px; position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex;
-            flex-direction: column; align-items: center; justify-content: space-between;
-            background-color: #fdfbf7;
+        .app-header {
+            text-align: center;
+            margin-bottom: 16px;
         }
-        .cert-title { font-family: 'Noto Serif TC', serif; font-size: 2.2rem; font-weight: 900; letter-spacing: 12px; color: #111; margin-top: 10px; }
-        .cert-body { width: 100%; text-align: center; font-family: 'Noto Serif TC', serif; font-size: 1.1rem; line-height: 2; color: #333; margin: 20px 0; }
-        .cert-footer { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 20px; font-family: 'Noto Serif TC', serif; }
-        
-        /* 獨立印章預覽 (透明背景模式) */
-        .transparent-box {
-            display: none; width: 400px; height: 400px;
-            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            border: 2px dashed #999; align-items: center; justify-content: center;
+
+        .app-header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* 印章預覽區（棋盤格代表透明） */
+        .preview-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            background-image: linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+            min-height: 280px;
+        }
+
+        .seal-box {
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6e6e73;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #c6c6c8;
+            border-radius: 10px;
+            background: #f9f9f9;
+            outline: none;
+        }
+
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #007aff;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: #e5e5ea;
+            color: #1c1c1e;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- 使用條款強制彈窗 -->
+    <!-- 免責聲明彈窗 -->
     <div id="termsModal">
-        <div class="modal-content">
-            <h3>⚠️ 使用條款與免責聲明</h3>
-            <p>
-                歡迎使用本「印章與獎狀產生器」。本工具僅供網頁前端 Canvas/SVG 技術交流、個人文件版面設計測試及藝術創作使用。<br><br>
-                <strong>特別聲明：</strong>
-                1. 本工具所創建之印章與內容會自動儲存於您的瀏覽器本地（LocalStorage）方便下次使用。<br>
-                2. 禁止使用本工具製作任何偽造公印章、偽造官方文書、詐欺或侵害他人權益之非法行為。<br>
-                3. 如因不當使用產生任何法律責任，概由使用者自行承擔。
-            </p>
-            <button class="modal-btn" id="agreeBtn">我已閱讀並同意</button>
+        <div class="modal-card">
+            <h3>⚠️ 使用條款與聲明</h3>
+            <p>歡迎使用印章生成器！本工具僅供設計測試、繪畫輔助與個人藝術創作使用。</p>
+            <ul class="warning-list">
+                <li>本工具會將您設定的印章內容儲存於手機本地。</li>
+                <li>嚴禁用於偽造公私印章、公文書、合約或任何詐欺違法行為。</li>
+                <li>使用者須自行承擔任何因不當使用所衍生之法律責任。</li>
+            </ul>
+            <button class="modal-btn" id="agreeBtn">同意並開始使用</button>
         </div>
     </div>
 
-    <div class="sidebar">
-        <h2>1. 選擇輸出模板</h2>
-        <div class="form-group">
-            <select id="templateSelect">
-                <option value="cert">📜 典雅獎狀範本</option>
-                <option value="trans">🏁 透明背景模式 (僅輸出印章)</option>
-            </select>
-        </div>
-
-        <h2>2. 左側：橢圓發票章內容</h2>
-        <div class="form-group">
-            <label>頂部環形文字 (公司名稱)</label>
-            <input type="text" id="ovalTop" value="印章貼紙製作有限公司">
-        </div>
-        <div class="form-group">
-            <label>中間文字 (用途)</label>
-            <input type="text" id="ovalCenter" value="收發章">
-        </div>
-        <div class="form-group">
-            <label>電話號碼</label>
-            <input type="text" id="ovalPhone" value="(02)1214-5678">
-        </div>
-        <div class="form-group">
-            <label>底部環形文字 (地址)</label>
-            <input type="text" id="ovalBottom" value="士林區承德路4段292巷11弄13號">
-        </div>
-
-        <h2>3. 右側：方形關防章 (篆體)</h2>
-        <div class="form-group">
-            <label>印章內文 (自動轉篆體風)</label>
-            <input type="text" id="sealText" value="行政院印">
-        </div>
-
-        <h2>4. 儲存與匯出</h2>
-        <button class="btn btn-success" id="downloadBtn">⬇️ 下載高畫質 PNG 圖檔</button>
-        <button class="btn btn-warning" id="resetBtn">🔄 恢復預設值</button>
+    <div class="app-header">
+        <h1>方形紅框印章生成器</h1>
     </div>
 
-    <div class="main-content">
-        <!-- 模板 1：獎狀 -->
-        <div class="certificate-card" id="certTemplate">
-            <div class="cert-title">獎 狀</div>
-            <div class="cert-body">
-                茲獎勵 <strong style="border-bottom: 1px solid #333; padding: 0 10px;">張永旭</strong> 同學<br>
-                參加本校 115 學年度專案實作競賽，榮獲 <strong>特優獎項</strong>。<br>
-                表現優異，特發此狀，以資鼓勵。
-            </div>
-            <div class="cert-footer">
-                <div>中華民國 115 年 9 月 27 日</div>
-                <div style="display: flex; gap: 15px; align-items: flex-end;">
-                    <div style="width: 130px; height: 90px;" id="certOvalContainer"></div>
-                    <div style="width: 80px; height: 80px;" id="certSquareContainer"></div>
-                </div>
-            </div>
-        </div>
+    <div class="preview-card">
+        <div class="seal-box" id="sealContainer"></div>
+    </div>
 
-        <!-- 模板 2：透明背景容器 -->
-        <div class="transparent-box" id="transTemplate">
-            <div style="width: 280px; height: 280px;" id="transContainer"></div>
+    <div class="control-card">
+        <div class="form-group">
+            <label for="sealText">印章文字（自動依字數排版並套用篆體）</label>
+            <input type="text" id="sealText" class="form-control" value="行政院印" placeholder="請輸入印章文字">
         </div>
+    </div>
+
+    <div class="action-group">
+        <button class="btn-primary" id="downloadBtn">⬇️ 下載透明背景 PNG</button>
+        <button class="btn-secondary" id="resetBtn">🔄 恢復預設值</button>
     </div>
 
     <script>
-        // 預設資料
-        const defaultData = {
-            ovalTop: "",
-            ovalCenter: "",
-            ovalPhone: "(",
-            ovalBottom: "",
-            sealText: "es",
-            template: "cert"
-        };
+        const DEFAULT_TEXT = "行政院印";
 
-        // 檢查條款同意狀態
         document.getElementById('agreeBtn').addEventListener('click', () => {
             document.getElementById('termsModal').style.display = 'none';
         });
 
-        // 從 LocalStorage 載入資料
-        function loadFromStorage() {
-            const saved = localStorage.getItem('seal_generator_data');
-            if (!saved) return defaultData;
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                return defaultData;
-            }
+        function loadSavedText() {
+            return localStorage.getItem('exact_seal_text') || DEFAULT_TEXT;
         }
 
-        // 儲存資料至 LocalStorage
-        function saveToStorage() {
-            const data = {
-                ovalTop: document.getElementById('ovalTop').value,
-                ovalCenter: document.getElementById('ovalCenter').value,
-                ovalPhone: document.getElementById('ovalPhone').value,
-                ovalBottom: document.getElementById('ovalBottom').value,
-                sealText: document.getElementById('sealText').value,
-                template: document.getElementById('templateSelect').value
-            };
-            localStorage.setItem('seal_generator_data', JSON.stringify(data));
+        function saveText(text) {
+            localStorage.setItem('exact_seal_text', text);
         }
 
-        // 初始化欄位數值
-        function initFields() {
-            const data = loadFromStorage();
-            document.getElementById('ovalTop').value = data.ovalTop;
-            document.getElementById('ovalCenter').value = data.ovalCenter;
-            document.getElementById('ovalPhone').value = data.ovalPhone;
-            document.getElementById('ovalBottom').value = data.ovalBottom;
-            document.getElementById('sealText').value = data.sealText;
-            document.getElementById('templateSelect').value = data.template;
+        // 精確繪製紅框白底紅字 (完美還原圖片2結構)
+        function buildExactSealSVG(text) {
+            const rawChars = text.trim() || "印";
+            const chars = rawChars.split('');
+            const count = chars.length;
 
-            // 切換模板顯示
-            if (data.template === 'cert') {
-                document.getElementById('certTemplate').style.display = 'flex';
-                document.getElementById('transTemplate').style.display = 'none';
-            } else {
-                document.getElementById('certTemplate').style.display = 'none';
-                document.getElementById('transTemplate').style.display = 'flex';
-            }
-        }
+            let cols = 2;
+            if (count > 4 && count <= 9) cols = 3;
+            else if (count > 9) cols = 4;
 
-        // 梅花 SVG 向量路徑
-        const plumBlossomPath = "M12 2 C13.5 6, 17 7, 19 5 C21 7.5, 19.5 11, 22 13 C19.5 15, 19 18.5, 16 18 C14 21, 10 21, 8 18 C5 18.5, 4.5 15, 2 13 C4.5 11, 3 7.5, 5 5 C7 7, 10.5 6, 12 2 Z";
+            const rows = Math.ceil(count / cols);
 
-        function buildOvalSVG(top, center, phone, bottom, color="#0b238d") {
+            // 中央白底區域範圍 (原圖中間白色正方形)
+            const innerSize = 220;
+            const innerX = 40;
+            const innerY = 40;
+
+            const cellW = innerSize / cols;
+            const cellH = innerSize / rows;
+            const fontSize = Math.min(cellW, cellH) * 0.78;
+
+            let textSvg = '';
+            chars.forEach((c, i) => {
+                // 由右至左、由上至下的傳統縱排
+                const col = (cols - 1) - (i % cols);
+                const row = Math.floor(i / cols);
+
+                const x = innerX + col * cellW + cellW / 2;
+                const y = innerY + row * cellH + cellH / 2 + (fontSize * 0.08);
+
+                textSvg += `<text x="${x}" y="${y}" font-size="${fontSize}" font-family="'Ma Shan Zheng', cursive" fill="#b01c1c" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
+            });
+
             return `
-            <svg viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="150" cy="100" rx="142" ry="92" fill="none" stroke="${color}" stroke-width="4"/>
-                <ellipse cx="150" cy="100" rx="136" ry="86" fill="none" stroke="${color}" stroke-width="1.5"/>
-                <ellipse cx="150" cy="100" rx="100" ry="60" fill="none" stroke="${color}" stroke-width="1.5"/>
+            <svg id="sealSvg" viewBox="0 0 300 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <!-- 1. 最外圍滿版紅框 (外底) -->
+                <rect x="0" y="0" width="300" height="300" fill="#b01c1c" />
                 
-                <g transform="translate(25, 90) scale(0.7)" fill="${color}">
-                    <path d="${plumBlossomPath}"/>
-                    <circle cx="12" cy="12" r="3" fill="#fff"/>
-                </g>
-                <g transform="translate(253, 90) scale(0.7)" fill="${color}">
-                    <path d="${plumBlossomPath}"/>
-                    <circle cx="12" cy="12" r="3" fill="#fff"/>
-                </g>
-
-                <path id="topArc" d="M 30,100 A 120,72 0 0,1 270,100" fill="none"/>
-                <text font-size="18" font-weight="bold" fill="${color}" text-anchor="middle">
-                    <textPath href="#topArc" startOffset="50%">${top}</textPath>
-                </text>
-
-                <text x="150" y="85" font-size="22" font-weight="bold" fill="${color}" text-anchor="middle" dominant-baseline="middle">${center}</text>
-                <text x="150" y="115" font-size="16" font-weight="bold" fill="${color}" text-anchor="middle" dominant-baseline="middle">${phone}</text>
-
-                <path id="bottomArc" d="M 35,108 A 115,68 0 0,0 265,108" fill="none"/>
-                <text font-size="14" font-weight="bold" fill="${color}" text-anchor="middle">
-                    <textPath href="#bottomArc" startOffset="50%">${bottom}</textPath>
-                </text>
+                <!-- 2. 中間白色實心正方形 (圖片2白底) -->
+                <rect x="40" y="40" width="220" height="220" fill="#ffffff" />
+                
+                <!-- 3. 文字內容 (紅色篆體) -->
+                ${textSvg}
             </svg>`;
         }
 
-        function buildSquareSealSVG(text, color="#c82424") {
-            let chars = text.split('');
-            let gridHtml = '';
-            let count = chars.length;
-            
-            if (count <= 4) {
-                chars.forEach((c, i) => {
-                    let row = Math.floor(i / 2);
-                    let col = 1 - (i % 2);
-                    let x = 60 + col * 80;
-                    let y = 75 + row * 80;
-                    gridHtml += `<text x="${x}" y="${y}" font-size="65" font-family="'Ma Shan Zheng', cursive" fill="${color}" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
-                });
-            } else {
-                chars.forEach((c, i) => {
-                    let row = Math.floor(i / 3);
-                    let col = 2 - (i % 3);
-                    let x = 40 + col * 60;
-                    let y = 50 + row * 60;
-                    gridHtml += `<text x="${x}" y="${y}" font-size="45" font-family="'Ma Shan Zheng', cursive" fill="${color}" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
-                });
-            }
+        function renderSeal() {
+            const textInput = document.getElementById('sealText');
+            const text = textInput.value;
+            const container = document.getElementById('sealContainer');
 
-            return `
-            <svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect x="5" y="5" width="190" height="190" fill="none" stroke="${color}" stroke-width="12" />
-                <rect x="18" y="18" width="164" height="164" fill="none" stroke="${color}" stroke-width="2" />
-                ${gridHtml}
-            </svg>`;
+            container.innerHTML = buildExactSealSVG(text);
+            saveText(text);
         }
 
-        function updateSeals() {
-            const top = document.getElementById('ovalTop').value;
-            const center = document.getElementById('ovalCenter').value;
-            const phone = document.getElementById('ovalPhone').value;
-            const bottom = document.getElementById('ovalBottom').value;
-            const sealText = document.getElementById('sealText').value;
+        const sealInput = document.getElementById('sealText');
+        sealInput.value = loadSavedText();
+        sealInput.addEventListener('input', renderSeal);
 
-            const ovalSvg = buildOvalSVG(top, center, phone, bottom);
-            const squareSvg = buildSquareSealSVG(sealText);
-
-            document.getElementById('certOvalContainer').innerHTML = ovalSvg;
-            document.getElementById('certSquareContainer').innerHTML = squareSvg;
-
-            document.getElementById('transContainer').innerHTML = `
-                <div style="display:flex; flex-direction:column; gap:20px; align-items:center;">
-                    <div style="width:240px; height:160px;">${ovalSvg}</div>
-                    <div style="width:150px; height:150px;">${squareSvg}</div>
-                </div>
-            `;
-
-            // 儲存狀態至 LocalStorage
-            saveToStorage();
-        }
-
-        // 模板切換事件
-        document.getElementById('templateSelect').addEventListener('change', (e) => {
-            if (e.target.value === 'cert') {
-                document.getElementById('certTemplate').style.display = 'flex';
-                document.getElementById('transTemplate').style.display = 'none';
-            } else {
-                document.getElementById('certTemplate').style.display = 'none';
-                document.getElementById('transTemplate').style.display = 'flex';
-            }
-            saveToStorage();
-        });
-
-        // 恢復預設值按鈕
         document.getElementById('resetBtn').addEventListener('click', () => {
-            if (confirm('確定要恢復預設欄位內容嗎？')) {
-                localStorage.removeItem('seal_generator_data');
-                initFields();
-                updateSeals();
+            if (confirm('確定要恢復預設文字嗎？')) {
+                sealInput.value = DEFAULT_TEXT;
+                renderSeal();
             }
         });
 
-        // 綁定即時輸入監聽
-        ['ovalTop', 'ovalCenter', 'ovalPhone', 'ovalBottom', 'sealText'].forEach(id => {
-            document.getElementById(id).addEventListener('input', updateSeals);
-        });
-
-        // 匯出 PNG
+        // 匯出圖檔
         document.getElementById('downloadBtn').addEventListener('click', () => {
-            const isCert = document.getElementById('templateSelect').value === 'cert';
-            const targetEl = isCert ? document.getElementById('certTemplate') : document.getElementById('transContainer');
-            
-            const svgData = new XMLSerializer().serializeToString(targetEl.querySelector('svg') || targetEl);
+            const svgEl = document.getElementById('sealSvg');
+            if (!svgEl) return;
+
+            const svgData = new XMLSerializer().serializeToString(svgEl);
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const img = new Image();
 
-            canvas.width = isCert ? 1400 : 600;
-            canvas.height = isCert ? 1000 : 600;
+            canvas.width = 600;
+            canvas.height = 600;
 
             const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
             const url = URL.createObjectURL(blob);
 
             img.onload = () => {
-                if (isCert) {
-                    ctx.fillStyle = '#fdfbf7';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
                 const a = document.createElement('a');
-                a.download = isCert ? 'certificate.png' : 'seal_transparent.png';
+                a.download = 'seal_exact.png';
                 a.href = canvas.toDataURL('image/png');
                 a.click();
                 URL.revokeObjectURL(url);
             };
-            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}">
-                    <foreignObject width="100%" height="100%">
-                        <div xmlns="http://www.w3.org/1999/xhtml">
-                            ${targetEl.outerHTML}
-                        </div>
-                    </foreignObject>
-                </svg>
-            `);
+            
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
         });
 
-        // 啟動初始化
-        initFields();
-        updateSeals();
+        renderSeal();
     </script>
 </body>
 </html>
