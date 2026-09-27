@@ -1,3 +1,370 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>東港海事全校課表</title><style>
-:root{--blue:#075985;--sky:#0284c7;--bg:#f4f7fb;--card:#fff;--line:#dbeafe}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#0f172a;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif}header{background:var(--blue);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}.brand{font-size:20px;font-weight:800}.sub{font-size:12px;color:#bae6fd}.menu{border:1px solid #bae6fd;background:transparent;color:white;border-radius:8px;padding:9px 12px;font-weight:800;cursor:pointer}main{max-width:1180px;margin:auto;padding:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0;box-shadow:0 2px 10px #0f172a0d}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.title{font-size:26px;font-weight:800}.label{font-size:12px;color:#64748b;margin-top:9px}.value{font-weight:700}.clock{font-size:44px;font-weight:800}.button,.select,select,input{border:1px solid #bae6fd;border-radius:9px;padding:11px;background:#fff;font-size:15px}.button{background:var(--sky);color:#fff;border:0;font-weight:800;cursor:pointer}.secondary{background:#e0f2fe;color:var(--blue);margin:4px}.menuPanel{display:none;position:absolute;right:20px;top:62px;background:white;border-radius:12px;box-shadow:0 6px 20px #0f172a33;overflow:hidden;width:240px}.menuPanel.show{display:block}.menuPanel button{display:block;width:100%;padding:14px;text-align:left;border:0;border-bottom:1px solid #e2e8f0;background:white;font-weight:700;cursor:pointer}.tableWrap{overflow:auto}.schedule{border-collapse:collapse;min-width:850px;width:100%}.schedule th,.schedule td{border:1px solid var(--line);padding:9px;text-align:center;vertical-align:top}.schedule th{background:#e0f2fe;color:var(--blue)}.schedule td{height:62px}.course{font-weight:700}.teacher{font-size:12px;color:#64748b;margin-top:4px}.hidden{display:none}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:9px 12px;border:1px solid #bae6fd;border-radius:9px;background:white;cursor:pointer}.chip.active{background:var(--sky);color:white}.dropdown{position:relative}.options{position:absolute;left:0;right:0;top:48px;background:#fff;border:1px solid var(--line);max-height:250px;overflow:auto;z-index:4}.options div{padding:11px;border-bottom:1px solid #e2e8f0;cursor:pointer}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#64748b}.danger{color:#dc2626;cursor:pointer;font-weight:700}@media(max-width:600px){main{padding:12px}.clock{font-size:36px}}
-</style></head><body><header><div><div class="brand">東港海事課表</div><div class="sub">全校離線課表管理｜資料儲存於本機</div></div><button class="menu" onclick="toggleMenu()">MENU ☰</button><div id="menu" class="menuPanel"></div></header><main id="app"></main><script>const scheduleData={"輪一甲":{"mentor":"郭文凱","schedule":{"1":["船用電學<br>涂乙平","體育<br>賴景炫","體育<br>賴景炫","船舶金工實習<br>簡慶政/郭文凱","全民國防教育<br>卓惠婷"],"2":["電腦輔助繪圖<br>郭文凱","船用電學<br>涂乙平","輪機概論<br>蕭守進","船舶金工實習<br>簡慶政/郭文凱","數學<br>洪耀臨"],"3":["輪機概論<br>蕭守進","生涯規劃<br>鄭品榛","數學<br>洪耀臨","船舶金工實習<br>簡慶政/郭文凱","歷史<br>陳豔顏"],"4":["英語文<br>張琬美","藝術生活<br>董怡芳","物理<br>龔榮志","繩纜作業實習<br>簡慶政/郭文凱","國語文<br>鍾秉君"],"5":["歷史<br>陳豔顏","原住民族語文","週會/聯課活動","繩纜作業實習<br>簡慶政/郭文凱","音樂<br>朱怡貞"],"6":["國語文<br>鍾秉君","英語文<br>張琬美","週會/聯課活動","基礎銲接實習<br>簡慶政/郭文凱","物理<br>龔榮志"],"7":["國語文<br>鍾秉君","健康與護理<br>李怡蓉","班會<br>郭文凱","基礎銲接實習<br>簡慶政/郭文凱","資訊科技<br>蔡宗勳"]}},"輪一乙":{"mentor":"洪晟輔","schedule":{"1":["-","船舶金工實習<br>陳容銜/洪晟輔","體育<br>賴景炫","健康與護理<br>李怡蓉","數學<br>洪耀臨"],"2":["全民國防教育<br>卓惠婷","船舶金工實習<br>陳容銜/洪晟輔","英語文<br>張琬美","電腦輔助繪圖<br>洪晟輔","生涯規劃<br>鄭品榛"],"3":["數學<br>洪耀臨","船舶金工實習<br>陳容銜/洪晟輔","藝術生活<br>董怡芳","國語文<br>邱玉瑾","體育<br>賴景炫"],"4":["物理<br>龔榮志","繩纜作業實習<br>陳容銜/洪晟輔","船用電學<br>涂乙平","國語文<br>邱玉瑾","英語文<br>張琬美"],"5":["輪機概論<br>洪晟輔","繩纜作業實習<br>陳容銜/洪晟輔","週會/聯課活動","物理<br>龔榮志","閩南語文<br>許珮旻"],"6":["船用電學<br>涂乙平","基礎銲接實習<br>陳容銜/洪晟輔","週會/聯課活動","資訊科技<br>蔡宗勳","歷史<br>陳豔顏"],"7":["歷史<br>陳豔顏","基礎銲接實習<br>陳容銜/洪晟輔","班會<br>洪晟輔","輪機概論<br>洪晟輔","音樂<br>朱怡貞"]}},"食一甲":{"mentor":"鄭純華","schedule":{"1":["音樂<br>鐘悅綾","全民國防教育<br>卓惠婷","食品概論<br>鄭伃容","烘焙食品加工實習<br>鄭純華","數學<br>黃玲玲"],"2":["生涯規劃<br>鄭品榛","化學<br>林家偉","數學<br>黃玲玲","烘焙食品加工實習<br>鄭純華","國語文<br>鍾秉君"],"3":["食品概論<br>鄭伃容","基礎數學<br>黃玲玲","國語文<br>鍾秉君","烘焙食品加工實習<br>鄭純華","國語文<br>鍾秉君"],"4":["食品加工<br>鄭純華","歷史<br>陳豔顏","化學<br>林家偉","烘焙食品加工實習<br>鄭純華","體育<br>張惠珍"],"5":["健康與護理<br>李怡蓉","閩南語文<br>許珮旻","週會/聯課活動","烘焙食品加工實習<br>鄭純華","資訊科技<br>蔡宗勳"],"6":["應用英文<br>孫沛涵","藝術生活<br>董怡芳","週會/聯課活動","歷史<br>陳豔顏","英語文<br>孫沛涵"],"7":["英語文<br>孫沛涵","體育<br>張惠珍","班會<br>鄭純華","食品加工<br>鄭純華","食品概論<br>鄭伃容"]}},"食一乙":{"mentor":"陳可芃","schedule":{"1":["生涯規劃<br>鄭品榛","化學<br>林家偉","健康與護理<br>李怡蓉","客語文<br>朱怡貞/許珮旻","烘焙食品加工實習鄭容"],"2":["食品概論","藝術生活","全民國防教育","圖書館國語文","烘焙<br>實習工廠"],"3":["鄭容歷史","-<br>董怡芳","-<br>卓惠婷","-<br>黃瓊瑩","鄭容烘焙<br>實習工廠"],"4":["-<br>陳豔顏","-<br>陳可芃","-<br>張惠珍","-<br>黃瓊瑩","鄭容烘焙<br>實習工廠"],"5":["音樂<br>鐘悅綾","數學<br>黃玲玲","國語文<br>黃瓊瑩","體育<br>張惠珍","工實習鄭容烘焙<br>實習工廠"],"6":["基礎數學<br>黃玲玲","資訊科技<br>蔡宗勳","週會/<br>聯課活動","化學<br>林家偉","烘焙食品加工實習鄭容"],"7":["英語文","新大樓<br>電腦教室","週會/<br>聯課活動","食品概論","烘焙<br>實習工廠"]}},"養一甲":{"mentor":"王嘉穗","schedule":{"1":["英語文<br>孫沛涵","英語文<br>孫沛涵","數學<br>黃玲玲","化學<br>王嘉穗","水產概要<br>王嘉穗"],"2":["音樂","生物","餌料生物實習","觀賞水族養殖實習","生物"],"3":["-<br>鐘悅綾","-<br>吳忠霖","-<br>鄭伊惠","-<br>阮詮瀠","-<br>吳忠霖"],"4":["-<br>伍喜喬","-<br>吳忠霖","-<br>鄭伊惠","-<br>阮詮瀠","-<br>吳忠霖"],"5":["體育<br>潘冠霖","-<br>吳忠霖","習<br>鄭伊惠","殖實習<br>阮詮瀠","殖<br>吳忠霖"],"6":["地理<br>朱芳慧","化學<br>王嘉穗","週會/<br>聯課活動","地理<br>朱芳慧","全民國防教育<br>卓惠婷"],"7":["應用數學","水產概要","週會/<br>聯課活動","國語文","體育"]}},"家一甲":{"mentor":"張人心","schedule":{"1":["家政概論<br>王雅貞","數學<br>黃玲玲","物理<br>龔榮志","英語文<br>張人心","物理<br>龔榮志"],"2":["飲料調製","歷史","國語文","服裝製作實務","數學"],"3":["-<br>劉惠佳","-<br>陳豔顏","-<br>蔡叔珮","-<br>邱芳茵","-<br>黃玲玲"],"4":["-<br>劉惠佳","-<br>張人心","-<br>蔡叔珮","-<br>邱芳茵","-<br>王雅貞"],"5":["飲料調製<br>劉惠佳","體育<br>潘冠霖","歷史<br>陳豔顏","務<br>邱芳茵","國語文<br>蔡叔珮"],"6":["資訊科技<br>蔡宗勳","健康與護理<br>李怡蓉","週會/<br>聯課活動","多媒材創作實務<br>王雅貞","色彩概論<br>王雅貞"],"7":["新大樓<br>電腦教室","閩南語文","週會/<br>聯課活動","手工藝教室多媒材創作實務","音樂"]}},"管一甲":{"mentor":"吳倚萱","schedule":{"1":["體育<br>郭俊宏","健康與護理<br>李怡蓉","會計學實務<br>陳文雅","會計學<br>陳文雅","地理<br>朱芳慧"],"2":["物理","英語文","多功能教室會計學實務","商業概論","會計學"],"3":["-<br>龔榮志","-<br>陳其英","-<br>陳文雅","-<br>吳倚萱","-<br>陳文雅"],"4":["-<br>黃玲玲","-<br>電腦教室/吳倚萱","-<br>吳倚萱","-<br>電腦教室/黃靖雅","-<br>郭俊宏"],"5":["地理<br>朱芳慧","務<br>電腦教室/吳倚萱","英語文<br>陳其英","資訊科技<br>電腦教室/黃靖雅","育<br>卓惠婷"],"6":["音樂<br>鐘悅綾","數位科技概論<br>黃靖雅","週會/<br>聯課活動","國語文<br>伍喜喬","國語文<br>伍喜喬"],"7":["音樂教室會計學","管科<br>電腦教室","週會/<br>聯課活動","物理","國語文"]}},"管一乙":{"mentor":"張茹茗","schedule":{"1":["國語文<br>伍喜喬","門市經營實務<br>吳倚萱","會計學<br>曾柏喬","客語文<br>朱怡貞/蔡叔珮","資訊科技<br>張茹茗"],"2":["國語文","管科<br>電腦教室","音樂","圖書館全民國防教育","管科<br>電腦教室"],"3":["-<br>伍喜喬","-<br>電腦教室/吳倚萱","-<br>鐘悅綾","-<br>卓惠婷","-<br>電腦教室/張茹茗"],"4":["-<br>電腦教室/張茹茗","-<br>曾柏喬","-<br>朱芳慧","-<br>黃玲玲","-<br>龔榮志"],"5":["論<br>電腦教室/張茹茗","-<br>曾柏喬","數學<br>黃玲玲","體育<br>郭俊宏","體育<br>郭俊宏"],"6":["英語文<br>陳其英","物理<br>龔榮志","週會/<br>聯課活動","會計學<br>曾柏喬","數學<br>黃玲玲"],"7":["健康與護理","國語文","週會/<br>聯課活動","應用英文","英語文"]}},"電一甲":{"mentor":"李怡蓉","schedule":{"1":["資訊科技<br>蔡宗勳","英語文<br>張琬美","程式設計實習<br>謝秀宏","英語文<br>張琬美","國語文<br>黃瓊瑩"],"2":["數學<br>洪耀臨","全民國防教育<br>卓惠婷","程式設計實習<br>謝秀宏","應用英文<br>張琬美","國語文<br>黃瓊瑩"],"3":["音樂<br>鐘悅綾","藝術生活<br>董怡芳","程式設計實習<br>謝秀宏","體育<br>郭俊宏","數學<br>洪耀臨"],"4":["體育<br>郭俊宏","生涯規劃<br>鄭品榛","體育<br>郭俊宏","國語文<br>黃瓊瑩","數學<br>洪耀臨"],"5":["基礎電子實習<br>李冠章","地理<br>朱芳慧","週會/聯課活動","閩南語文<br>許珮旻","物理<br>龔榮志"],"6":["基礎電子實習<br>李冠章","物理<br>龔榮志","週會/聯課活動","基本電學<br>梁忠吉","地理<br>朱芳慧"],"7":["基礎電子實習<br>李冠章","健康與護理<br>李怡蓉","班會<br>李怡蓉","基本電學<br>梁忠吉","基本電學<br>梁忠吉"]}},"電一乙":{"mentor":"黃瓊瑩","schedule":{"1":["地理<br>朱芳慧","國語文<br>黃瓊瑩","體育<br>郭俊宏","物理<br>龔榮志","程式設計實習<br>謝秀宏"],"2":["資訊科技<br>蔡宗勳","基本電學<br>李冠章","地理<br>朱芳慧","數學<br>洪耀臨","程式設計實習<br>謝秀宏"],"3":["國語文<br>黃瓊瑩","英語文<br>張琬美","音樂<br>鐘悅綾","體育<br>郭俊宏","程式設計實習<br>謝秀宏"],"4":["基本電學<br>李冠章","基本電學<br>李冠章","數學<br>洪耀臨","健康與護理<br>李怡蓉","國語文<br>黃瓊瑩"],"5":["數學<br>洪耀臨","藝術生活<br>董怡芳","週會/聯課活動","基礎電子實習<br>李冠章","生涯規劃<br>鄭品榛"],"6":["數學<br>洪耀臨","英語文<br>張琬美","週會/聯課活動","基礎電子實習<br>李冠章","閩南語文<br>許珮旻"],"7":["物理<br>龔榮志","應用英文<br>張琬美","班會<br>黃瓊瑩","基礎電子實習<br>李冠章","全民國防教育<br>卓惠婷"]}},"烘一甲":{"mentor":"卓惠婷","schedule":{"1":["英語文<br>蔡婉莉","英語文<br>蔡婉莉","音樂<br>鐘悅綾","烘焙食品加工實習<br>楊流芳","餅乾製作實習<br>李百齡"],"2":["化學","體育","音樂教室數學","烘焙<br>實習工廠","烘焙<br>實習工廠"],"3":["-<br>康浩琳","-<br>賴景炫","-<br>王淑民","-<br>實習工廠/楊流芳","-<br>實習工廠/李百齡"],"4":["-<br>王志源","-<br>李怡蓉","-<br>康浩琳","-<br>實習工廠/楊流芳","-<br>實習工廠/李百齡"],"5":["論<br>王志源","國語文<br>卓惠婷","育<br>卓惠婷","習<br>實習工廠/楊流芳","習<br>實習工廠/李百齡"],"6":["生涯規劃<br>鄭品榛","烘焙食品概論<br>王志源","週會/<br>聯課活動","麵包製作實習<br>楊流芳","穀類加工實習<br>李百齡"],"7":["國語文","食品加工","週會/<br>聯課活動","烘焙<br>實習工廠","烘焙<br>實習工廠"]}},"輪二甲":{"mentor":"楊承哲","schedule":{"1":["英語文<br>陳可芃","國語文<br>高珮軒","-<br>彈性學習/陳容銜/涂乙平","船用內燃機<br>朱河泰","電工機械<br>洪敏發"],"2":["船舶電器操作與保養實","國語文","船用內燃機","船用內燃機","基本電工與實習"],"3":["-<br>楊承哲","-<br>高珮軒","-<br>朱河泰","-<br>朱河泰","-<br>實習工廠/楊承哲"],"4":["-<br>楊承哲","-<br>朱芳慧","-<br>潘冠霖","-<br>陳可芃","-<br>實習工廠/楊承哲"],"5":["習<br>實習工廠/楊承哲","輔機<br>涂乙平","船藝<br>姜景銘","-<br>朱芳慧","實習<br>實習工廠/楊承哲"],"6":["機電整合實習<br>楊承哲","數學<br>王淑民","週會/<br>聯課活動","船藝<br>姜景銘","輔機<br>涂乙平"],"7":["氣壓<br>實習工廠","電工機械","週會/<br>聯課活動","船藝","輔機"]}},"輪二乙":{"mentor":"陳容銜","schedule":{"1":["電工機械<br>蕭守進","數學<br>王淑民","-<br>彈性學習/陳容銜/涂乙平","體育<br>潘冠霖","輔機<br>陳容銜"],"2":["國語文","基本電工與實習","船藝","船舶電器操作與保養實","體育"],"3":["-<br>高珮軒","-<br>洪敏發","-<br>姜景銘","-<br>黃福榮","-<br>潘冠霖"],"4":["-<br>陳容銜","-<br>洪敏發","-<br>蕭守進","-<br>黃福榮","-<br>蕭守進"],"5":["輔機<br>陳容銜","實習<br>洪敏發","-<br>蕭守進","習<br>實習工廠/黃福榮","電工機械<br>蕭守進"],"6":["船藝<br>姜景銘","英語文<br>沈璐儀","週會/<br>聯課活動","機電整合實習<br>黃福榮","英語文<br>沈璐儀"],"7":["船藝","國語文","週會/<br>聯課活動","氣壓<br>實習工廠","公民與社會"]}},"食二甲":{"mentor":"蔡宛玲","schedule":{"1":["公民與社會<br>陳豔顏","進階食品加工<br>蔡宛玲","-<br>彈性學習","食品微生物實習<br>楊雅玲","食品化學與分析實習<br>林郁茹"],"2":["應用英文進階","食品加工實習","進階食品加工","微生物實驗室食品微生物實習","分析化學實驗室食品化學與分析實習"],"3":["-<br>沈璐儀","-<br>蔡宛玲","-<br>蔡宛玲","-<br>楊雅玲","-<br>林郁茹"],"4":["-<br>高珮軒","-<br>蔡宛玲","-<br>陳豔顏","-<br>楊雅玲","-<br>林郁茹"],"5":["國語文<br>高珮軒","習<br>蔡宛玲","英語文<br>沈璐儀","數學<br>王淑民","體育<br>潘冠霖"],"6":["數學<br>王淑民","水產加工實習<br>蔡宛玲","週會/<br>聯課活動","應用數學<br>王淑民","食品化學與分析<br>林郁茹"],"7":["食品微生物","調理食品工廠水產加工實習","週會/<br>聯課活動","食品化學與分析","英語文"]}},"食二乙":{"mentor":"鍾秉君","schedule":{"1":["食品化學與分析實習<br>林郁茹","食品微生物<br>林郁茹","-<br>彈性學習","進階食品加工<br>蔡宛玲","食品微生物實習<br>楊雅玲"],"2":["分析化學實驗室食品化學與分析實習","體育","國語文","食品加工實習","微生物實驗室食品微生物實習"],"3":["-<br>林郁茹","-<br>潘冠霖","-<br>鍾秉君","-<br>蔡宛玲","-<br>楊雅玲"],"4":["-<br>林郁茹","-<br>王淑民","-<br>王淑民","-<br>蔡宛玲","-<br>楊雅玲"],"5":["英語文<br>陳可芃","階<br>陳可芃","-<br>朱芳慧","習<br>蔡宛玲","數學<br>王淑民"],"6":["食品化學與分析<br>林郁茹","國語文<br>鍾秉君","週會/<br>聯課活動","水產加工實習<br>蔡宛玲","公民與社會<br>朱芳慧"],"7":["體育","國語文","週會/<br>聯課活動","調理食品工廠水產加工實習","食品微生物"]}},"養二甲":{"mentor":"沈璐儀","schedule":{"1":["英語文<br>沈璐儀","藝術生活<br>董怡芳","-<br>彈性學習/阮詮瀠","體育<br>郭俊宏","體育<br>郭俊宏"],"2":["數學","國語文","水產生物實驗室經濟性魚蝦養殖實習","專題入門","應用英文"],"3":["-<br>王淑民","-<br>鍾秉君","-<br>阮詮瀠","-<br>洪英女","-<br>沈璐儀"],"4":["-<br>王嘉穗","-<br>鍾秉君","-<br>阮詮瀠","-<br>洪英女","-<br>沈璐儀"],"5":["礎實務<br>王嘉穗","應用數學<br>王淑民","養殖實習<br>阮詮瀠","專題入門<br>洪英女","-<br>李怡蓉"],"6":["生涯規劃<br>楊子鐳","水產生物實務<br>鄭伊惠","週會/<br>聯課活動","水質學實習<br>阮詮瀠","數學<br>王淑民"],"7":["水質學概要","水質教室水產生物實務","週會/<br>聯課活動","水質教室水質學實習","生命教育"]}},"家二甲":{"mentor":"蔡婉莉","schedule":{"1":["數學<br>王淑民","飾品設計與實務<br>王雅貞","-<br>彈性學習/董怡芳","烹飪<br>黃琡雅","數學<br>王淑民"],"2":["英語文","手工藝教室飾品設計與實務","國語文","烹飪教室烹飪","家庭教育"],"3":["-<br>蔡婉莉","-<br>王雅貞","-<br>高珮軒","-<br>黃琡雅","-<br>陳芷婕"],"4":["-<br>陳芷婕","-<br>王雅貞","-<br>賴景炫","-<br>黃琡雅","-<br>高珮軒"],"5":["-<br>陳芷婕","手工藝<br>王雅貞","藝術生活<br>董怡芳","點心製作<br>黃琡雅","國語文<br>高珮軒"],"6":["立體裁剪實務<br>陳芷婕","家庭教育<br>陳芷婕","週會/<br>聯課活動","點心製作<br>黃琡雅","英語文<br>蔡婉莉"],"7":["縫紉教室立體裁剪實務","生物","週會/<br>聯課活動","烹飪教室食物製備原理","生物"]}},"管二甲":{"mentor":"陳文雅","schedule":{"1":["行銷實務<br>曾柏喬","數學<br>張書源","體育<br>張惠珍","-<br>彈性學習/曾柏喬/張茹茗","國語文<br>高珮軒"],"2":["管科<br>電腦教室","生物","經濟學","管科<br>彈性學習/電腦教室","應用英文"],"3":["-<br>電腦教室/曾柏喬","-<br>康浩琳","-<br>吳倚萱","-<br>電腦教室/曾柏喬/張茹茗","-<br>陳其英"],"4":["-<br>吳倚萱","-<br>電腦教室/陳文雅","-<br>電腦教室/張茹茗","-<br>電腦教室/陳文雅","-<br>吳倚萱"],"5":["會計學<br>陳文雅","-<br>電腦教室/陳文雅","用<br>電腦教室/張茹茗","用<br>電腦教室/陳文雅","經濟學<br>吳倚萱"],"6":["數學<br>張書源","英語文<br>陳其英","週會/<br>聯課活動","英語文<br>陳其英","數位化資料處理<br>張茹茗"],"7":["國語文","運輸學","週會/<br>聯課活動","生物","管科<br>電腦教室"]}},"管二乙":{"mentor":"張書源","schedule":{"1":["會計軟體應用<br>陳文雅","會計學實務<br>陳文雅","英語文<br>陳可芃","-<br>彈性學習/曾柏喬/張茹茗","國語文<br>陳美偵"],"2":["管科<br>電腦教室","管科<br>電腦教室","數學","管科<br>彈性學習/電腦教室","國語文"],"3":["-<br>電腦教室/陳文雅","-<br>電腦教室/陳文雅","-<br>張書源","-<br>電腦教室/曾柏喬/張茹茗","-<br>陳美偵"],"4":["-<br>陳可芃","-<br>張惠珍","-<br>電腦教室/黃靖雅","-<br>吳倚萱","-<br>電腦教室/曾柏喬"],"5":["體育<br>張惠珍","生物<br>康浩琳","處理<br>電腦教室/黃靖雅","運輸學<br>吳倚萱","行銷實務<br>電腦教室/曾柏喬"],"6":["數位科技應用<br>黃靖雅","國語文<br>陳美偵","週會/<br>聯課活動","數學<br>張書源","生物<br>康浩琳"],"7":["管科<br>電腦教室","經濟學","週會/<br>聯課活動","經濟學","英語文"]}},"電二甲":{"mentor":"陳其英","schedule":{"1":["電子材料應用實習<br>陳鍾賢","電子學實習<br>梁忠吉","電子學<br>李冠章","可程式邏輯設計實習<br>梁忠吉","生物<br>康浩琳"],"2":["基電<br>實習工廠","微電腦控制教室電子學實習","電子學","微電腦控制教室可程式邏輯設計實習","體育"],"3":["-<br>實習工廠/陳鍾賢","-<br>梁忠吉","-<br>李冠章","-<br>梁忠吉","-<br>張惠珍"],"4":["-<br>實習工廠/陳鍾賢","-<br>梁忠吉","-<br>李冠章","-<br>梁忠吉","-<br>張書源"],"5":["階<br>陳其英","英語文<br>陳其英","國語文<br>陳美偵","電子學<br>李冠章","數學<br>張書源"],"6":["生物<br>康浩琳","數位邏輯實習<br>李冠章","週會/<br>聯課活動","國語文<br>陳美偵","英語文<br>陳其英"],"7":["數學","數位<br>實習工廠","週會/<br>聯課活動","國語文","數位邏輯設計"]}},"電二乙":{"mentor":"張琬美","schedule":{"1":["機器人控制實習<br>謝秀宏","數位邏輯實習<br>蔡明徑","數學<br>張書源","生物<br>康浩琳","電子學<br>楊森評"],"2":["程式設計教室機器人控制實習","數位<br>實習工廠","體育","國語文","電子學"],"3":["-<br>謝秀宏","-<br>實習工廠/蔡明徑","-<br>張惠珍","-<br>陳美偵","-<br>楊森評"],"4":["-<br>謝秀宏","-<br>實習工廠/蔡明徑","-<br>張琬美","-<br>陳美偵","-<br>楊森評"],"5":["國語文<br>陳美偵","數學<br>張書源","生物<br>康浩琳","數學<br>張書源","計<br>楊森評"],"6":["可程式邏輯設計實習<br>梁忠吉","電子學實習<br>楊森評","週會/<br>聯課活動","電子學<br>楊森評","數學<br>張書源"],"7":["微電腦控制教室可程式邏輯設計實習","基電<br>實習工廠","週會/<br>聯課活動","體育","應用英文進階"]}},"烘二甲":{"mentor":"李百齡","schedule":{"1":["西式點心製作實習<br>李百齡","食品微生物鄭容","中式麵食製作實習<br>陳淑華","職涯體驗<br>李百齡","電腦應用<br>蔡宗勳"],"2":["烘焙<br>實習工廠","食品微生物","烘焙<br>實習工廠","食品化學與分析實習","新大樓<br>電腦教室"],"3":["-<br>實習工廠/李百齡","鄭容食品化學與分析","-<br>實習工廠/陳淑華","-<br>林郁茹","-<br>電腦教室/蔡宗勳"],"4":["-<br>實習工廠/李百齡","鄭容食品化學與","-<br>實習工廠/陳淑華","-<br>林郁茹","-<br>張琬美"],"5":["作實習<br>實習工廠/李百齡","分析鄭容","作實習<br>實習工廠/陳淑華","分析實習<br>林郁茹","進階體育<br>賴景炫"],"6":["宴會點心製作實習<br>李百齡","進階食品加工<br>李百齡","週會/<br>聯課活動","食品微生物實習<br>王志源","歷史<br>陳豔顏"],"7":["烘焙<br>實習工廠","-<br>彈性學習","週會/<br>聯課活動","微生物實驗室食品微生物實習","應用數學"]}},"輪三甲":{"mentor":"洪敏發","schedule":{"1":["機械力學<br>洪晟輔","體育<br>張惠珍","船舶結構與穩度<br>姜景銘","數學<br>陳靜慧","機械力學<br>洪晟輔"],"2":["體育","動力設備操作實習","-<br>彈性學習","進階數學","輪機英文"],"3":["-<br>張惠珍","-<br>實習工廠/簡慶政","-<br>郭文凱/涂乙平","-<br>陳靜慧","-<br>涂乙平"],"4":["-<br>洪敏發","-<br>實習工廠/簡慶政","-<br>姜景銘","-<br>洪敏發","-<br>姜景銘"],"5":["習<br>洪敏發","裝實習<br>實習工廠/簡慶政","數學<br>陳靜慧","專題實作<br>洪敏發","穩度<br>姜景銘"],"6":["船舶自動控制實習<br>洪敏發","動力設備拆裝實習<br>簡慶政","週會/<br>聯課活動","英語文<br>張人心","國語文<br>陳曉慧"],"7":["電器模擬教室船舶自動控制實習","內燃機<br>實習工廠","週會/<br>聯課活動","國語文","英語文"]}},"輪三乙":{"mentor":"涂乙平","schedule":{"1":["機艙資源與團隊管理概<br>姜景銘","機艙資源與團隊管理概<br>姜景銘","國語文<br>蔡叔珮","英語文<br>孫沛涵","船舶結構與穩度<br>姜景銘"],"2":["動力設備操作實習","數學","-<br>彈性學習","應用英文","進階數學"],"3":["-<br>實習工廠/簡慶政","-<br>陳靜慧","-<br>郭文凱/涂乙平","-<br>孫沛涵","-<br>陳靜慧"],"4":["-<br>實習工廠/簡慶政","-<br>姜景銘","-<br>朱河泰","-<br>實習工廠/王邵謙","-<br>陳靜慧"],"5":["裝實習<br>實習工廠/簡慶政","英語文<br>孫沛涵","專題實作<br>朱河泰","習<br>實習工廠/王邵謙","機械力學<br>郭文凱"],"6":["動力設備拆裝實習<br>簡慶政","機械力學<br>郭文凱","週會/<br>聯課活動","船舶自動控制實習<br>王邵謙","國語文<br>蔡叔珮"],"7":["內燃機<br>實習工廠","體育","週會/<br>聯課活動","電工配線<br>實習工廠","體育"]}},"食三甲":{"mentor":"陳淑華","schedule":{"1":["應用英文進階<br>張人心","英語文<br>張人心","應用數學<br>梁有德","體育<br>賴景炫","進階食品加工實習<br>陳淑華"],"2":["國語文","應用數學","-<br>彈性學習","進階食品微生物","調理食品工廠進階食品加工實習"],"3":["-<br>黃瓊瑩","-<br>梁有德","-<br>王志源","-<br>陳淑華","-<br>陳淑華"],"4":["-<br>黃瓊瑩","-<br>陳淑華","鄭容<br>林郁茹","鄭容<br>王志源","-<br>陳淑華"],"5":["應用數學<br>梁有德","國學常識<br>黃瓊瑩","分析化學鄭容<br>林郁茹","析鄭容<br>王志源","工實習<br>陳淑華"],"6":["農產加工<br>鄭純華","食品網購平台建置<br>鄭純華/陳淑華","週會/<br>聯課活動","食品安全與衛生<br>陳淑華","食品加工專題實習<br>陳淑華"],"7":["農產加工","食品網購平台建置","週會/<br>聯課活動","英語文","調理食品工廠食品加工專題實習"]}},"食三乙":{"mentor":"林家偉","schedule":{"1":["進階食品加工實習<br>林家偉","國語文<br>陳美偵","食品安全與衛生<br>林家偉","應用數學<br>梁有德","體育<br>賴景炫"],"2":["調理食品工廠進階食品加工實習","國語文","-<br>彈性學習","食品安全與衛生","應用英文進階"],"3":["-<br>林家偉","-<br>陳美偵","-<br>王志源","-<br>林家偉","-<br>孫沛涵"],"4":["-<br>林家偉","-<br>林郁茹","鄭容<br>林郁茹","鄭容<br>王志源","-<br>孫沛涵"],"5":["工實習<br>林家偉","農產加工<br>林家偉","分析化學鄭容<br>林郁茹","析鄭容<br>王志源","國學常識<br>陳美偵"],"6":["食品加工專題實習<br>林家偉","食品網購平台建置<br>鄭純華/陳淑華","週會/<br>聯課活動","英語文<br>孫沛涵","進階食品微生物<br>鄭純華"],"7":["調理食品工廠食品加工專題實習","食品網購平台建置","週會/<br>聯課活動","體育","應用數學"]}},"養三甲":{"mentor":"鄭伊惠","schedule":{"1":["水族營養飼料學概要<br>王嘉穗","水族營養飼料學與實習<br>王嘉穗","公民與社會<br>陳豔顏","應用英文<br>蔡婉莉","體育<br>潘冠霖"],"2":["區域特色水族養殖實習","水產生物實驗室水族營養飼料學與實習","-<br>彈性學習","水產養殖工程概論","水族營養飼料學概要"],"3":["-<br>吳忠霖","-<br>王嘉穗","-<br>王嘉穗","-<br>吳忠霖","-<br>王嘉穗"],"4":["-<br>吳忠霖","-<br>王嘉穗","-<br>蔡婉莉","-<br>吳忠霖","-<br>蔡婉莉"],"5":["族養殖實習<br>吳忠霖","務<br>王嘉穗","體育<br>潘冠霖","計學<br>吳忠霖","英語文<br>蔡婉莉"],"6":["水族疾病實習<br>鄭伊惠","海洋生態概要<br>洪英女","週會/<br>聯課活動","水族景觀設計學<br>吳忠霖","應用數學<br>陳靜慧"],"7":["水質教室水族疾病實習","國語文","週會/<br>聯課活動","海洋生態概要","應用數學"]}},"家三甲":{"mentor":"陳曉慧","schedule":{"1":["服裝設計實務<br>陳芷婕","家政美學<br>陳芷婕","幼兒教保概論<br>王雅貞","服飾工藝<br>王雅貞","點心製作<br>黃琡雅"],"2":["縫紉教室服裝設計實務","家政美學","-<br>彈性學習","手工藝教室服飾工藝","烹飪教室點心製作"],"3":["-<br>陳芷婕","-<br>陳芷婕","-<br>董怡芳","-<br>王雅貞","-<br>黃琡雅"],"4":["-<br>孫沛涵","-<br>賴景炫","-<br>吳佳容","-<br>王雅貞","-<br>黃琡雅"],"5":["體育<br>賴景炫","數學<br>梁有德","術<br>吳佳容","專題實作<br>王雅貞","點心製作<br>黃琡雅"],"6":["國語文<br>陳曉慧","國學常識<br>陳曉慧","週會/<br>聯課活動","行銷與服務<br>陳芷婕","宴會膳食<br>黃琡雅"],"7":["國語文","英語文","週會/<br>聯課活動","觀光日文","烹飪教室宴會膳食"]}},"管三甲":{"mentor":"梁有德","schedule":{"1":["電腦軟體應用<br>張茹茗","會計學應用<br>曾柏喬","國語文<br>陳美偵","英語文<br>沈璐儀","應用數學<br>梁有德"],"2":["管科<br>電腦教室","多功能教室會計學應用","-<br>彈性學習","應用數學","應用數學"],"3":["-<br>電腦教室/張茹茗","-<br>曾柏喬","食品行銷學","-<br>梁有德","-<br>梁有德"],"4":["-<br>張惠珍","-<br>電腦教室/施奕丞","-<br>施奕丞","-<br>曾柏喬","-<br>電腦教室/張茹茗"],"5":["英語文<br>沈璐儀","投資實務<br>電腦教室/施奕丞","-<br>施奕丞","-<br>施奕丞","專題實作<br>電腦教室/張茹茗"],"6":["應用數學<br>梁有德","商業軟體應用<br>張茹茗","週會/<br>聯課活動","計算機實務<br>張茹茗","國際貿易實務<br>曾柏喬"],"7":["航業經營","管科<br>電腦教室","週會/<br>聯課活動","管科<br>電腦教室","多功能教室國際貿易實務"]}},"管三乙":{"mentor":"伍喜喬","schedule":{"1":["應用數學<br>梁有德","金融與證券投資實務<br>施奕丞","國語文<br>伍喜喬","商業軟體應用<br>黃靖雅","體育<br>張惠珍"],"2":["應用數學","管科<br>電腦教室","-<br>彈性學習","管科<br>電腦教室","計算機實務"],"3":["-<br>梁有德","-<br>電腦教室/施奕丞","食品經營","-<br>電腦教室/黃靖雅","-<br>電腦教室/黃靖雅"],"4":["-<br>電腦教室/黃靖雅","-<br>梁有德","-<br>電腦教室/曾柏喬","-<br>施奕丞","-<br>電腦教室/黃靖雅"],"5":["用<br>電腦教室/黃靖雅","體育<br>張惠珍","食品經營<br>電腦教室/曾柏喬","-<br>曾柏喬","應用數學<br>梁有德"],"6":["國際貿易實務<br>曾柏喬","航業英文<br>蔡婉莉","週會/<br>聯課活動","英語文<br>蔡婉莉","專題實作<br>陳文雅"],"7":["多功能教室國際貿易實務","會計學應用","週會/<br>聯課活動","航業經營","管科<br>電腦教室"]}},"電三甲":{"mentor":"謝秀宏","schedule":{"1":["介面電路控制實習<br>蔡明徑","電子電路實習<br>謝秀宏","-<br>彈性學習/蔡明徑/梁忠吉","計算機應用<br>張智遠","微電腦應用實習<br>蔡明峰"],"2":["數位<br>實習工廠","程式設計教室電子電路實習","電腦硬體裝修教室<br>彈性學習","數位<br>實習工廠","微電腦控制教室微電腦應用實習"],"3":["-<br>實習工廠/蔡明徑","-<br>謝秀宏","-<br>蔡明徑/梁忠吉","-<br>實習工廠/張智遠","-<br>蔡明峰"],"4":["-<br>實習工廠/蔡明徑","-<br>謝秀宏","-<br>邱玉瑾","-<br>陳鍾賢","-<br>蔡明峰"],"5":["數位電路<br>梁忠吉","數學精讀<br>陳靜慧","國語文<br>邱玉瑾","專題實作<br>陳鍾賢","英語文<br>張人心"],"6":["應用英文進階<br>張人心","英語文<br>張人心","週會/<br>聯課活動","數位電路<br>梁忠吉","電子電路<br>謝秀宏"],"7":["數學精讀","體育","週會/<br>聯課活動","電子電路","電子電路"]}},"電三乙":{"mentor":"陳靜慧","schedule":{"1":["電子電路<br>李冠章","電子電路<br>李冠章","-<br>彈性學習/蔡明徑/梁忠吉","專題實作<br>陳鍾賢","數位電路<br>蔡明徑"],"2":["國學常識","電子電路","電腦硬體裝修教室<br>彈性學習","電腦硬體裝修教室專題實作","國語文"],"3":["-<br>陳曉慧","-<br>李冠章","-<br>蔡明徑/梁忠吉","-<br>陳鍾賢","-<br>陳曉慧"],"4":["-<br>陳曉慧","-<br>陳靜慧","-<br>孫沛涵","-<br>實習工廠/張智遠","-<br>蔡明徑"],"5":["階<br>孫沛涵","階<br>蔡明徑","體育<br>賴景炫","-<br>實習工廠/張智遠","英語文<br>孫沛涵"],"6":["介面電路控制實習<br>蔡明徑","電子電路實習<br>陳鍾賢","週會/<br>聯課活動","微電腦應用實習<br>蔡明峰","基本電學進階<br>蔡明徑"],"7":["數位<br>實習工廠","微電腦控制教室電子電路實習","週會/<br>聯課活動","微電腦控制教室微電腦應用實習","體育"]}},"餐三甲":{"mentor":"潘冠霖","schedule":{"1":["宴會膳食<br>吳佳容","體適能<br>潘冠霖","電腦軟體應用<br>蔡宗勳","餐飲服務進階<br>劉惠佳","行銷與服務<br>邱芳茵"],"2":["烹飪教室宴會膳食","西餐烹調實習","新大樓<br>電腦教室","餐飲服務進階","旅遊實務"],"3":["-<br>吳佳容","-<br>劉惠佳","-<br>電腦教室/蔡宗勳","-<br>劉惠佳","-<br>劉惠佳"],"4":["-<br>吳佳容","-<br>劉惠佳","-<br>沈璐儀","-<br>沈璐儀","-<br>劉惠佳"],"5":["宴會膳食<br>吳佳容","習<br>劉惠佳","-<br>邱芳茵","話實務<br>林紜卉","旅遊實務<br>劉惠佳"],"6":["宴會點心<br>吳佳容","觀光概論<br>黃琡雅","週會/<br>聯課活動","餐旅日文會話實務<br>林紜卉","專題實作<br>劉惠佳"],"7":["烹飪教室宴會點心","觀光概論","週會/<br>聯課活動","餐飲管理","綜合教室專題實作"]}}};const days=['一','二','三','四','五'];const slots=[['08:10','09:00'],['09:10','10:00'],['10:10','11:00'],['11:10','12:00'],['13:20','14:10'],['14:20','15:10'],['15:20','16:10']];const classes=Object.keys(scheduleData);const teachers=[...new Set(Object.values(scheduleData).flatMap(x=>Object.values(x.schedule).flatMap(d=>d).flatMap(e=>(e.split('<br>')[1]||'').split('/')).filter(Boolean))].sort();let state=JSON.parse(localStorage.getItem('donggang-web-state')||'null')||{currentClass:classes.includes('電一甲')?'電一甲':classes[0],students:[],changes:{},absences:{},dutyCount:1,mealGroups:['第一組','第二組','第三組']};let page='home';function save(){localStorage.setItem('donggang-web-state',JSON.stringify(state))}function toggleMenu(){document.querySelector('#menu').classList.toggle('show')}function go(p){page=p;toggleMenu();render()}function parts(e){let a=e.split('<br>');return{course:a[0]||'-',teacher:a[1]||'-'}}function table(name){let info=scheduleData[name];let h='<div class="card"><h3>'+name+' 完整週課表</h3><div class="tableWrap"><table class="schedule"><tr><th>節次</th>'+days.map(x=>'<th>週'+x+'</th>').join('')+'</tr>';for(let p=1;p<=7;p++){h+='<tr><th>第'+p+'節<br>'+slots[p-1][0]+'</th>';for(let d=0;d<5;d++){let x=parts(info.schedule[p][d]);h+='<td><div class="course">'+x.course+'</div><div class="teacher">'+x.teacher+'</div></td>'}h+='</tr>'}return h+'</table></div></div>'}function current(){let now=new Date(),d=now.getDay(),t=now.toTimeString().slice(0,5);if(d<1||d>5)return null;let p=slots.findIndex(x=>t>=x[0]&&t<=x[1]);if(p<0)return null;let key=new Date().toISOString().slice(0,10)+'-'+(p+1);return{p:p+1,d,key,...parts(state.changes[key]||scheduleData[state.currentClass].schedule[p+1][d-1])}}function home(){let now=new Date(),c=current(), students=state.students;let duty=students.length?students[Math.floor(now.getDate()/state.dutyCount)%students.length]:null;let group=state.mealGroups.length?state.mealGroups[Math.floor(now.getDate())%state.mealGroups.length]:'尚未設定';return '<div class="title">首頁</div><div class="muted">'+state.currentClass+'｜導師：'+scheduleData[state.currentClass].mentor+'</div><div class="card"><h3>世界標準時鐘（UTC）</h3><div class="clock">'+now.toISOString().slice(11,19)+'</div><div class="muted">台灣時間 '+now.toLocaleTimeString('zh-TW',{hour12:false})+'</div><hr><div class="label">目前課程</div><div class="value">'+(c?c.course:'目前非上課時間')+'</div><div class="muted">'+(c?'週'+days[c.d-1]+'｜第'+c.p+'節 '+slots[c.p-1].join('–'):'-')+'</div><div class="label">授課教師</div><div class="value">'+(c?c.teacher:'-')+'</div><div class="label">上課地點</div><div class="value">上課地點不定</div></div><div class="grid"><div class="card"><h3>值日生</h3><div class="value">'+(duty?duty.seat+'號 '+duty.name:'尚未設定')+'</div><div class="muted">自動輪迴｜每次 '+state.dutyCount+' 人</div></div><div class="card"><h3>抬餐桶輪班</h3><div class="value">'+group+'</div><div class="muted">自動輪迴</div></div></div>'+table(state.currentClass)}function classPage(){return '<div class="title">班級設定</div><div class="card"><h3>首頁顯示班級</h3><div class="chips">'+classes.map(c=>'<button class="chip '+(c===state.currentClass?'active':'')+'" onclick="state.currentClass=\''+c+'\';save();render()">'+c+'</button>').join('')+'</div></div><div class="card"><h3>新增學生</h3><div class="row"><input id="sn" placeholder="姓名"><input id="sid" placeholder="學號"><input id="ss" placeholder="坐號" type="number"><button class="button" onclick="addStudent()">新增</button></div><p class="muted">值日輪值人數：<button class="chip" onclick="state.dutyCount=state.dutyCount%3+1;save();render()">'+state.dutyCount+' 人</button></p><h3>學生名單</h3>'+(state.students.length?state.students.map((s,i)=>'<div class="row"><span>'+s.seat+'號｜'+s.name+'｜'+s.id+'</span><span class="danger" onclick="state.students.splice('+i+',1);save();render()">刪除</span></div>').join(''):'<span class="muted">尚未新增學生</span>')+'</div>'}function teacherPicker(kind){return '<div class="dropdown"><input id="tq" placeholder="輸入教師姓名逐字搜尋" oninput="filterTeachers(\''+kind+'\')"><div id="opts" class="options hidden"></div></div>'}function filterTeachers(kind){let q=document.querySelector('#tq').value;let o=document.querySelector('#opts');o.innerHTML=teachers.filter(t=>t.includes(q)).map(t=>'<div onclick="selectTeacher(\''+t+'\',\''+kind+'\')">'+t+'</div>').join('');o.classList.remove('hidden')}function selectTeacher(t,kind){document.querySelector('#tq').value=t;document.querySelector('#opts').classList.add('hidden');if(kind==='survey')document.querySelector('#surveyResult').innerHTML=survey(t);else document.querySelector('#teacherResult').innerHTML=teacherResult(t)}function teacherResult(t){let r=[];for(const n of classes)for(const [p,d] of Object.entries(scheduleData[n].schedule))d.forEach((e,i)=>{let x=parts(e);if(x.teacher.includes(t))r.push('<div>'+n+'｜週'+days[i]+' 第'+p+'節｜'+x.course+'</div>')});return '<div class="card"><h3>'+t+' 授課動態</h3>'+r.join('')+'</div>'}function survey(t){let r=teacherResult(t).replace('授課動態','教師調查');return r.replaceAll('</div>','<div class="muted">上課地點：上課地點不定</div></div>')}function teacherPage(kind){return '<div class="title">'+(kind==='survey'?'教師調查':'查找教師動態')+'</div><div class="card"><p class="muted">下拉選單一定有教師，輸入文字會逐字排除不符合的人選。</p>'+teacherPicker(kind)+'<div id="'+(kind==='survey'?'surveyResult':'teacherResult')+'" class="card"><span class="muted">請選擇教師</span></div></div>'}function lookup(){return '<div class="title">查找班級課表</div><div class="chips">'+classes.map(c=>'<button class="chip" onclick="document.querySelector(\'#lookup\').innerHTML=table(\''+c+'\')">'+c+'</button>').join('')+'</div><div id="lookup">'+table(state.currentClass)+'</div>'}function changePage(){return '<div class="title">調課／代課設定</div><div class="card"><input id="cd" placeholder="日期 YYYY-MM-DD"><input id="cp" placeholder="節次 1-7" type="number"><input id="cc" placeholder="完整課程名稱"><input id="ct" placeholder="代課教師（可留白）"><button class="button" onclick="let k=cd.value+'-'+cp.value;state.changes[k]=cc.value+'<br>'+(ct.value||'-');save();alert('已儲存');">儲存調課／代課</button></div>'}function absence(){return '<div class="title">未到登記</div><div class="card"><input id="ad" placeholder="日期 YYYY-MM-DD"><input id="ap" placeholder="節次 1-7" type="number"><input id="as" placeholder="學生坐號" type="number"><select id="ar"><option>公假</option><option>事假</option><option>喪假</option><option>病假</option><option>曠課</option></select><button class="button" onclick="state.absences[ad.value+'-'+ap.value+'-'+as.value]=ar.value;save();alert('已登記');">儲存未到登記</button></div>'}function render(){let labels=['首頁','班級設定','查找教師動態','教師調查','查找班級課表','調課／代課設定','未到登記'],pages=['home','class','teacher','survey','lookup','change','absence'];document.querySelector('#menu').innerHTML=labels.map((x,i)=>'<button onclick="go(\''+pages[i]+'\')">'+(i+1)+'. '+x+'</button>').join('');let content=page==='home'?home():page==='class'?classPage():page==='teacher'?teacherPage('teacher'):page==='survey'?teacherPage('survey'):page==='lookup'?lookup():page==='change'?changePage():absence();document.querySelector('#app').innerHTML=content}function addStudent(){let n=document.querySelector('#sn').value,id=document.querySelector('#sid').value,s=Number(document.querySelector('#ss').value);if(n&&id&&s){state.students.push({name:n,id,seat:s});save();render()}else alert('請填妥姓名、學號、坐號')}render();setInterval(()=>{if(page==='home')render()},1000)</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印章與獎狀產生器</title>
+    <!-- 載入古風/篆體風格字型與楷體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { display: flex; height: 100vh; background: #eef2f5; color: #333; overflow: hidden; }
+        
+        /* 條款彈窗遮罩 */
+        #termsModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #fff; width: 500px; max-width: 90%; padding: 30px;
+            border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .modal-content h3 { color: #1a73e8; margin-bottom: 15px; font-size: 1.3rem; }
+        .modal-content p { font-size: 0.9rem; line-height: 1.6; color: #555; margin-bottom: 20px; }
+        .modal-btn {
+            width: 100%; padding: 12px; background: #1a73e8; color: white;
+            border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: bold;
+        }
+        .modal-btn:hover { background: #1557b0; }
+
+        /* 控制側邊欄 */
+        .sidebar { width: 360px; background: #fff; padding: 20px; border-right: 1px solid #ddd; overflow-y: auto; }
+        .sidebar h2 { font-size: 1.1rem; color: #1a73e8; margin: 15px 0 8px 0; border-bottom: 2px solid #1a73e8; padding-bottom: 4px; }
+        .sidebar h2:first-child { margin-top: 0; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 4px; font-size: 0.95rem; cursor: pointer; margin-top: 8px; font-weight: bold; }
+        .btn:hover { background: #1557b0; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #218838; }
+        .btn-warning { background: #ffc107; color: #333; margin-top: 5px; }
+        .btn-warning:hover { background: #e0a800; }
+
+        /* 預覽主要區域 */
+        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: auto; }
+        
+        /* 獎狀容器 (比例縮放) */
+        .certificate-card {
+            width: 700px; height: 500px; background: #fff;
+            border: 12px double #c59b27; padding: 30px; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex;
+            flex-direction: column; align-items: center; justify-content: space-between;
+            background-color: #fdfbf7;
+        }
+        .cert-title { font-family: 'Noto Serif TC', serif; font-size: 2.2rem; font-weight: 900; letter-spacing: 12px; color: #111; margin-top: 10px; }
+        .cert-body { width: 100%; text-align: center; font-family: 'Noto Serif TC', serif; font-size: 1.1rem; line-height: 2; color: #333; margin: 20px 0; }
+        .cert-footer { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 20px; font-family: 'Noto Serif TC', serif; }
+        
+        /* 獨立印章預覽 (透明背景模式) */
+        .transparent-box {
+            display: none; width: 400px; height: 400px;
+            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 2px dashed #999; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 使用條款強制彈窗 -->
+    <div id="termsModal">
+        <div class="modal-content">
+            <h3>⚠️ 使用條款與免責聲明</h3>
+            <p>
+                歡迎使用本「印章與獎狀產生器」。本工具僅供網頁前端 Canvas/SVG 技術交流、個人文件版面設計測試及藝術創作使用。<br><br>
+                <strong>特別聲明：</strong>
+                1. 本工具所創建之印章與內容會自動儲存於您的瀏覽器本地（LocalStorage）方便下次使用。<br>
+                2. 禁止使用本工具製作任何偽造公印章、偽造官方文書、詐欺或侵害他人權益之非法行為。<br>
+                3. 如因不當使用產生任何法律責任，概由使用者自行承擔。
+            </p>
+            <button class="modal-btn" id="agreeBtn">我已閱讀並同意</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h2>1. 選擇輸出模板</h2>
+        <div class="form-group">
+            <select id="templateSelect">
+                <option value="cert">📜 典雅獎狀範本</option>
+                <option value="trans">🏁 透明背景模式 (僅輸出印章)</option>
+            </select>
+        </div>
+
+        <h2>2. 左側：橢圓發票章內容</h2>
+        <div class="form-group">
+            <label>頂部環形文字 (公司名稱)</label>
+            <input type="text" id="ovalTop" value="印章貼紙製作有限公司">
+        </div>
+        <div class="form-group">
+            <label>中間文字 (用途)</label>
+            <input type="text" id="ovalCenter" value="收發章">
+        </div>
+        <div class="form-group">
+            <label>電話號碼</label>
+            <input type="text" id="ovalPhone" value="(02)1214-5678">
+        </div>
+        <div class="form-group">
+            <label>底部環形文字 (地址)</label>
+            <input type="text" id="ovalBottom" value="士林區承德路4段292巷11弄13號">
+        </div>
+
+        <h2>3. 右側：方形關防章 (篆體)</h2>
+        <div class="form-group">
+            <label>印章內文 (自動轉篆體風)</label>
+            <input type="text" id="sealText" value="行政院印">
+        </div>
+
+        <h2>4. 儲存與匯出</h2>
+        <button class="btn btn-success" id="downloadBtn">⬇️ 下載高畫質 PNG 圖檔</button>
+        <button class="btn btn-warning" id="resetBtn">🔄 恢復預設值</button>
+    </div>
+
+    <div class="main-content">
+        <!-- 模板 1：獎狀 -->
+        <div class="certificate-card" id="certTemplate">
+            <div class="cert-title">獎 狀</div>
+            <div class="cert-body">
+                茲獎勵 <strong style="border-bottom: 1px solid #333; padding: 0 10px;">張永旭</strong> 同學<br>
+                參加本校 115 學年度專案實作競賽，榮獲 <strong>特優獎項</strong>。<br>
+                表現優異，特發此狀，以資鼓勵。
+            </div>
+            <div class="cert-footer">
+                <div>中華民國 115 年 9 月 27 日</div>
+                <div style="display: flex; gap: 15px; align-items: flex-end;">
+                    <div style="width: 130px; height: 90px;" id="certOvalContainer"></div>
+                    <div style="width: 80px; height: 80px;" id="certSquareContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模板 2：透明背景容器 -->
+        <div class="transparent-box" id="transTemplate">
+            <div style="width: 280px; height: 280px;" id="transContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // 預設資料
+        const defaultData = {
+            ovalTop: "印章貼紙製作有限公司",
+            ovalCenter: "收發章",
+            ovalPhone: "(02)1214-5678",
+            ovalBottom: "士林區承德路4段292巷11弄13號",
+            sealText: "行政院印",
+            template: "cert"
+        };
+
+        // 檢查條款同意狀態
+        document.getElementById('agreeBtn').addEventListener('click', () => {
+            document.getElementById('termsModal').style.display = 'none';
+        });
+
+        // 從 LocalStorage 載入資料
+        function loadFromStorage() {
+            const saved = localStorage.getItem('seal_generator_data');
+            if (!saved) return defaultData;
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                return defaultData;
+            }
+        }
+
+        // 儲存資料至 LocalStorage
+        function saveToStorage() {
+            const data = {
+                ovalTop: document.getElementById('ovalTop').value,
+                ovalCenter: document.getElementById('ovalCenter').value,
+                ovalPhone: document.getElementById('ovalPhone').value,
+                ovalBottom: document.getElementById('ovalBottom').value,
+                sealText: document.getElementById('sealText').value,
+                template: document.getElementById('templateSelect').value
+            };
+            localStorage.setItem('seal_generator_data', JSON.stringify(data));
+        }
+
+        // 初始化欄位數值
+        function initFields() {
+            const data = loadFromStorage();
+            document.getElementById('ovalTop').value = data.ovalTop;
+            document.getElementById('ovalCenter').value = data.ovalCenter;
+            document.getElementById('ovalPhone').value = data.ovalPhone;
+            document.getElementById('ovalBottom').value = data.ovalBottom;
+            document.getElementById('sealText').value = data.sealText;
+            document.getElementById('templateSelect').value = data.template;
+
+            // 切換模板顯示
+            if (data.template === 'cert') {
+                document.getElementById('certTemplate').style.display = 'flex';
+                document.getElementById('transTemplate').style.display = 'none';
+            } else {
+                document.getElementById('certTemplate').style.display = 'none';
+                document.getElementById('transTemplate').style.display = 'flex';
+            }
+        }
+
+        // 梅花 SVG 向量路徑
+        const plumBlossomPath = "M12 2 C13.5 6, 17 7, 19 5 C21 7.5, 19.5 11, 22 13 C19.5 15, 19 18.5, 16 18 C14 21, 10 21, 8 18 C5 18.5, 4.5 15, 2 13 C4.5 11, 3 7.5, 5 5 C7 7, 10.5 6, 12 2 Z";
+
+        function buildOvalSVG(top, center, phone, bottom, color="#0b238d") {
+            return `
+            <svg viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="150" cy="100" rx="142" ry="92" fill="none" stroke="${color}" stroke-width="4"/>
+                <ellipse cx="150" cy="100" rx="136" ry="86" fill="none" stroke="${color}" stroke-width="1.5"/>
+                <ellipse cx="150" cy="100" rx="100" ry="60" fill="none" stroke="${color}" stroke-width="1.5"/>
+                
+                <g transform="translate(25, 90) scale(0.7)" fill="${color}">
+                    <path d="${plumBlossomPath}"/>
+                    <circle cx="12" cy="12" r="3" fill="#fff"/>
+                </g>
+                <g transform="translate(253, 90) scale(0.7)" fill="${color}">
+                    <path d="${plumBlossomPath}"/>
+                    <circle cx="12" cy="12" r="3" fill="#fff"/>
+                </g>
+
+                <path id="topArc" d="M 30,100 A 120,72 0 0,1 270,100" fill="none"/>
+                <text font-size="18" font-weight="bold" fill="${color}" text-anchor="middle">
+                    <textPath href="#topArc" startOffset="50%">${top}</textPath>
+                </text>
+
+                <text x="150" y="85" font-size="22" font-weight="bold" fill="${color}" text-anchor="middle" dominant-baseline="middle">${center}</text>
+                <text x="150" y="115" font-size="16" font-weight="bold" fill="${color}" text-anchor="middle" dominant-baseline="middle">${phone}</text>
+
+                <path id="bottomArc" d="M 35,108 A 115,68 0 0,0 265,108" fill="none"/>
+                <text font-size="14" font-weight="bold" fill="${color}" text-anchor="middle">
+                    <textPath href="#bottomArc" startOffset="50%">${bottom}</textPath>
+                </text>
+            </svg>`;
+        }
+
+        function buildSquareSealSVG(text, color="#c82424") {
+            let chars = text.split('');
+            let gridHtml = '';
+            let count = chars.length;
+            
+            if (count <= 4) {
+                chars.forEach((c, i) => {
+                    let row = Math.floor(i / 2);
+                    let col = 1 - (i % 2);
+                    let x = 60 + col * 80;
+                    let y = 75 + row * 80;
+                    gridHtml += `<text x="${x}" y="${y}" font-size="65" font-family="'Ma Shan Zheng', cursive" fill="${color}" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
+                });
+            } else {
+                chars.forEach((c, i) => {
+                    let row = Math.floor(i / 3);
+                    let col = 2 - (i % 3);
+                    let x = 40 + col * 60;
+                    let y = 50 + row * 60;
+                    gridHtml += `<text x="${x}" y="${y}" font-size="45" font-family="'Ma Shan Zheng', cursive" fill="${color}" text-anchor="middle" dominant-baseline="middle">${c}</text>`;
+                });
+            }
+
+            return `
+            <svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="5" width="190" height="190" fill="none" stroke="${color}" stroke-width="12" />
+                <rect x="18" y="18" width="164" height="164" fill="none" stroke="${color}" stroke-width="2" />
+                ${gridHtml}
+            </svg>`;
+        }
+
+        function updateSeals() {
+            const top = document.getElementById('ovalTop').value;
+            const center = document.getElementById('ovalCenter').value;
+            const phone = document.getElementById('ovalPhone').value;
+            const bottom = document.getElementById('ovalBottom').value;
+            const sealText = document.getElementById('sealText').value;
+
+            const ovalSvg = buildOvalSVG(top, center, phone, bottom);
+            const squareSvg = buildSquareSealSVG(sealText);
+
+            document.getElementById('certOvalContainer').innerHTML = ovalSvg;
+            document.getElementById('certSquareContainer').innerHTML = squareSvg;
+
+            document.getElementById('transContainer').innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                    <div style="width:240px; height:160px;">${ovalSvg}</div>
+                    <div style="width:150px; height:150px;">${squareSvg}</div>
+                </div>
+            `;
+
+            // 儲存狀態至 LocalStorage
+            saveToStorage();
+        }
+
+        // 模板切換事件
+        document.getElementById('templateSelect').addEventListener('change', (e) => {
+            if (e.target.value === 'cert') {
+                document.getElementById('certTemplate').style.display = 'flex';
+                document.getElementById('transTemplate').style.display = 'none';
+            } else {
+                document.getElementById('certTemplate').style.display = 'none';
+                document.getElementById('transTemplate').style.display = 'flex';
+            }
+            saveToStorage();
+        });
+
+        // 恢復預設值按鈕
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('確定要恢復預設欄位內容嗎？')) {
+                localStorage.removeItem('seal_generator_data');
+                initFields();
+                updateSeals();
+            }
+        });
+
+        // 綁定即時輸入監聽
+        ['ovalTop', 'ovalCenter', 'ovalPhone', 'ovalBottom', 'sealText'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateSeals);
+        });
+
+        // 匯出 PNG
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const isCert = document.getElementById('templateSelect').value === 'cert';
+            const targetEl = isCert ? document.getElementById('certTemplate') : document.getElementById('transContainer');
+            
+            const svgData = new XMLSerializer().serializeToString(targetEl.querySelector('svg') || targetEl);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            canvas.width = isCert ? 1400 : 600;
+            canvas.height = isCert ? 1000 : 600;
+
+            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            img.onload = () => {
+                if (isCert) {
+                    ctx.fillStyle = '#fdfbf7';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                const a = document.createElement('a');
+                a.download = isCert ? 'certificate.png' : 'seal_transparent.png';
+                a.href = canvas.toDataURL('image/png');
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}">
+                    <foreignObject width="100%" height="100%">
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            ${targetEl.outerHTML}
+                        </div>
+                    </foreignObject>
+                </svg>
+            `);
+        });
+
+        // 啟動初始化
+        initFields();
+        updateSeals();
+    </script>
+</body>
+</html>
