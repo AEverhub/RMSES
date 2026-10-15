@@ -1,140 +1,68 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>正統小篆朱文印生成器</title>
-    <!-- 開源小篆字型：現代漢字會自動套用對應的小篆字形 -->
-    <style>
-        @font-face {
-            font-family: 'LXGWSeal';
-            src: url('https://cdn.jsdelivr.net/gh/lxgw/LxgwSeal@main/TTF/LXGWSeal-Regular.ttf') format('truetype');
-            font-display: block;
-        }
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>班級成績統計系統</title>
+<style>
+:root{--navy:#10243e;--blue:#1769aa;--cyan:#12a8c4;--bg:#f4f7fb;--card:#fff;--text:#26364a;--muted:#718096;--line:#e4eaf2;--green:#159570;--orange:#d8841c;--red:#d64b4b;--shadow:0 10px 28px rgba(16,36,62,.08)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif}button,input,select{font:inherit}button{cursor:pointer}.topbar{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:10;box-shadow:0 3px 16px #10243e33}.brand{display:flex;align-items:center;gap:13px}.brand-mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--cyan),#35d4ad);display:grid;place-items:center;font-size:21px;font-weight:800}.brand h1{font-size:19px;margin:0}.brand small{display:block;color:#abc0d7;font-size:11px;margin-top:3px}.top-actions{display:flex;align-items:center;gap:16px}.clock{font-variant-numeric:tabular-nums;color:#d9e8f5;font-size:13px;white-space:nowrap}.menu-wrap{position:relative}.menu-btn{border:1px solid #6b829d;background:#1b3656;color:#fff;border-radius:9px;padding:10px 14px;font-weight:700}.menu-btn:hover,.menu-btn.open{background:#294b70}.menu{display:none;position:absolute;right:0;top:48px;width:230px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:7px;color:var(--text)}.menu.open{display:block}.menu button{width:100%;border:0;background:transparent;text-align:left;padding:11px 13px;border-radius:8px;color:var(--text)}.menu button:hover,.menu button.active{background:#eef7fc;color:var(--blue);font-weight:700}.menu .divider{height:1px;background:var(--line);margin:6px 0}.layout{max-width:1240px;margin:0 auto;padding:28px 24px 60px}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}.eyebrow{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:1px}.page-head h2{font-size:27px;margin:5px 0 6px}.page-head p{color:var(--muted);margin:0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:19px;box-shadow:var(--shadow)}.stat{min-height:126px}.stat .label{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:33px;margin-top:13px;color:var(--navy)}.stat .hint{font-size:12px;color:var(--muted);margin-top:6px}.section-title{font-size:17px;margin:0 0 15px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field label{display:block;font-size:13px;font-weight:700;margin:0 0 6px;color:#40556c}.field input,.field select,.field textarea{width:100%;border:1px solid #ccd7e4;background:#fff;border-radius:8px;padding:10px 11px;color:var(--text);outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #12a8c41c}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.btn{border:0;border-radius:8px;padding:10px 15px;font-weight:700}.primary{background:var(--blue);color:#fff}.primary:hover{background:#125487}.secondary{background:#eef3f8;color:#38516b}.danger{background:#fff0f0;color:var(--red)}.success{background:#eaf8f3;color:var(--green)}.empty{text-align:center;padding:35px 15px;color:var(--muted);border:1px dashed #ccd7e4;border-radius:10px}.empty b{display:block;color:var(--text);margin-bottom:5px}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{padding:9px 11px;border:1px solid #ccd7e4;border-radius:8px;background:#fff}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;min-width:680px;background:#fff}th,td{padding:12px 13px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;white-space:nowrap}th{background:#f7f9fc;color:#587087;font-size:12px}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:800}.pill.green{background:#e6f7f0;color:var(--green)}.pill.orange{background:#fff4df;color:var(--orange)}.pill.red{background:#ffeded;color:var(--red)}.pill.gray{background:#edf1f5;color:#607286}.note{font-size:12px;color:var(--muted);line-height:1.6}.subject-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.subject-chip{display:flex;align-items:center;gap:8px;background:#eef7fc;border:1px solid #cceaf2;color:#17627a;border-radius:8px;padding:7px 10px;font-size:13px}.subject-chip button{border:0;background:transparent;color:#b34b58;font-weight:800}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.score-item{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfcfe}.score-item label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}.score-item input{width:100%;padding:9px;border:1px solid #ccd7e4;border-radius:7px}.alert{padding:12px 14px;border-radius:9px;background:#fff7e6;color:#82530d;font-size:13px;margin-bottom:15px}.hidden{display:none!important}.modal-back{position:fixed;inset:0;background:#10243e77;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal-back.show{display:flex}.modal{background:#fff;border-radius:14px;width:min(560px,100%);padding:22px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}.modal h3{margin:0 0 16px}.close{float:right;border:0;background:transparent;font-size:22px;color:var(--muted)}@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.topbar{padding:0 16px}.brand small{display:none}.clock{font-size:11px}.layout{padding:22px 14px}.page-head h2{font-size:23px}}@media(max-width:560px){.grid,.form-grid,.score-grid{grid-template-columns:1fr}.brand h1{font-size:16px}.clock{display:none}.topbar{height:64px}}
+</style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body { background-color: #f2f2f7; color: #1c1c1e; padding: 16px; display: flex; flex-direction: column; min-height: 100vh; }
-        #termsModal { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-card { background: #fff; width: 100%; max-width: 360px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
-        .modal-card h3 { font-size: 1.2rem; color: #b01c1c; margin-bottom: 12px; text-align: center; }
-        .modal-card p { font-size: .88rem; line-height: 1.5; color: #4a4a4a; margin-bottom: 16px; text-align: justify; }
-        .modal-card .warning-list { font-size: .82rem; color: #b01c1c; margin-bottom: 20px; padding-left: 18px; }
-        .modal-btn, .btn-primary, .btn-secondary { width: 100%; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
-        .modal-btn { padding: 14px; background: #007aff; color: #fff; font-size: 1rem; }
-        .app-header { text-align: center; margin-bottom: 16px; }
-        .app-header h1 { font-size: 1.3rem; font-weight: 700; }
-        .preview-card { background: #fff; border-radius: 16px; padding: 24px; display: flex; justify-content: center; align-items: center; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.05); background-image: linear-gradient(45deg,#e5e5e5 25%,transparent 25%),linear-gradient(-45deg,#e5e5e5 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e5e5 75%),linear-gradient(-45deg,transparent 75%,#e5e5e5 75%); background-size: 16px 16px; background-position: 0 0,0 8px,8px -8px,-8px 0; min-height: 280px; }
-        .seal-box { width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; }
-        .control-card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.05); }
-        .form-group label { display: block; font-size: .85rem; font-weight: 600; color: #6e6e73; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 12px 14px; font-size: 1rem; border: 1px solid #c6c6c8; border-radius: 10px; background: #f9f9f9; outline: none; }
-        .form-control:focus { border-color: #007aff; box-shadow: 0 0 0 3px rgba(0,122,255,.12); }
-        .conversion-status { margin-top: 8px; min-height: 1.2em; color: #6e6e73; font-size: .78rem; }
-        .action-group { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-        .btn-primary { padding: 14px; background: #007aff; color: #fff; font-size: 1rem; }
-        .btn-secondary { padding: 12px; background: #e5e5ea; color: #1c1c1e; font-size: .95rem; }
-    </style>
+<style>
+/* 依示意圖的頂部控制列：時間在左、通知居中、MENU 在右 */
+.topbar{height:152px;padding:0 24px;background:#10192d;display:grid;grid-template-columns:minmax(360px,1fr) auto auto;gap:16px;align-items:center;border-bottom:2px solid #23314a}
+.clock-panel{height:76px;min-width:360px;display:flex;align-items:center;padding:0 22px;border:2px solid #23314a;border-radius:11px;background:#080d19;color:#36b9ed;box-shadow:inset 0 0 18px #0005;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:25px;letter-spacing:1px;white-space:nowrap}
+.clock-panel strong{font-weight:500;margin-left:18px;letter-spacing:2px}.top-actions{display:contents}.notice-btn{width:102px;height:124px;border:1px solid #aebdce;border-radius:22px;background:#fff;color:#18324c;font-size:34px;box-shadow:0 2px 4px #0003}.notice-btn:hover{background:#eef5fa}.menu-btn{height:100px;min-width:336px;padding:0 30px;border:1px solid #314158;border-radius:16px;background:#1d2a40;color:#fff;font-family:Georgia,"Noto Serif TC",serif;font-size:43px;font-weight:400;letter-spacing:2px}.menu-btn:hover,.menu-btn.open{background:#293a54}.menu{top:110px}.brand{display:none}
+@media(max-width:850px){.topbar{height:92px;padding:0 12px;grid-template-columns:1fr auto auto;gap:8px}.clock-panel{height:58px;min-width:0;padding:0 12px;font-size:16px}.clock-panel strong{margin-left:8px}.notice-btn{width:58px;height:68px;border-radius:14px;font-size:24px}.menu-btn{height:68px;min-width:0;padding:0 15px;border-radius:12px;font-size:25px}.menu{top:78px}}
+@media(max-width:560px){
+body{min-width:320px}.topbar{height:132px;padding:10px 12px;grid-template-columns:1fr auto;grid-template-rows:58px 54px;gap:8px;align-content:center}.clock-panel{grid-column:1/-1;width:100%;height:54px;padding:0 12px;font-size:15px;border-radius:9px;justify-content:flex-start}.clock-panel span{font-size:13px}.clock-panel strong{margin-left:7px;letter-spacing:1px}.notice-btn{width:64px;height:54px;border-radius:12px;font-size:23px}.menu-btn{width:100%;height:54px;min-width:0;padding:0 18px;border-radius:11px;font-size:21px;letter-spacing:1px}.menu{top:62px;right:0;width:min(260px,calc(100vw - 24px))}.layout{padding:17px 12px 40px}.page-head{display:block;margin-bottom:16px}.page-head .btn{width:100%;margin-top:14px}.page-head h2{font-size:22px}.page-head p{font-size:13px}.card{padding:15px;border-radius:12px}.grid{gap:10px}.stat{min-height:105px;padding:14px}.stat strong{font-size:26px;margin-top:10px}.stat .label{font-size:12px}.two{gap:12px;margin-top:12px}.form-grid{gap:11px}.field input,.field select{padding:11px 10px}.toolbar input,.toolbar select{width:100%}.toolbar .btn{width:100%}.actions .btn{flex:1;min-width:130px}.section-title{font-size:16px}.note{font-size:13px}.empty{padding:28px 12px}.table-wrap{margin-left:-2px;margin-right:-2px}th,td{padding:10px 9px}.score-entry{overflow-x:auto}
+}
+</style>
 </head>
 <body>
-    <div id="termsModal">
-        <div class="modal-card">
-            <h3>⚠️ 使用條款與聲明</h3>
-            <p>歡迎使用印章生成器！本工具僅供設計測試、繪畫輔助與個人藝術創作使用。</p>
-            <ul class="warning-list"><li>本工具會將您設定的印章內容儲存於手機本地。</li><li>嚴禁用於偽造公私印章、公文書、合約或任何詐欺違法行為。</li><li>使用者須自行承擔任何因不當使用所衍生之法律責任。</li></ul>
-            <button class="modal-btn" id="agreeBtn">同意並開始使用</button>
-        </div>
-    </div>
-
-    <div class="app-header"><h1>正統朱文印（滿版直排）</h1></div>
-    <div class="preview-card"><div class="seal-box" id="sealContainer"></div></div>
-    <div class="control-card">
-        <div class="form-group">
-            <label for="sealText">輸入文字（右上開始向下直排塞滿）</label>
-            <input type="text" id="sealText" class="form-control" value="吉祥如意" placeholder="請輸入 1~12 個字" maxlength="12">
-            <div class="conversion-status" id="conversionStatus" aria-live="polite"></div>
-        </div>
-    </div>
-    <div class="action-group">
-        <button class="btn-primary" id="downloadBtn">⬇️ 下載透明背景 PNG</button>
-        <button class="btn-secondary" id="resetBtn">🔄 恢復預設值</button>
-    </div>
-
-    <script>
-        const DEFAULT_TEXT = "吉祥如意";
-        document.getElementById('agreeBtn').addEventListener('click', () => {
-            document.getElementById('termsModal').style.display = 'none';
-        });
-
-        function loadSavedText() { return localStorage.getItem('zhuan_seal_text') || DEFAULT_TEXT; }
-        function saveText(text) { localStorage.setItem('zhuan_seal_text', text); }
-        function escapeXml(value) {
-            return value.replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&apos;', '"':'&quot;' }[ch]));
-        }
-
-        function buildFullSealSVG(text) {
-            const rawChars = Array.from(text.trim() || "印").slice(0, 12);
-            const count = rawChars.length;
-            let rows = count === 1 ? 1 : count <= 4 ? 2 : count <= 9 ? 3 : 4;
-            const cols = Math.ceil(count / rows);
-            const innerSize = 220, innerX = 40, innerY = 40;
-            const cellW = innerSize / cols, cellH = innerSize / rows;
-            const fontSize = Math.min(cellW, cellH) * 0.98;
-            let textSvg = '';
-
-            rawChars.forEach((c, i) => {
-                const row = i % rows;
-                const col = (cols - 1) - Math.floor(i / rows);
-                const x = innerX + col * cellW + cellW / 2;
-                const y = innerY + row * cellH + cellH / 2 + fontSize * .05;
-                textSvg += `<text x="${x}" y="${y}" font-size="${fontSize}" font-family="LXGWSeal, serif" font-weight="400" fill="#b01c1c" text-anchor="middle" dominant-baseline="middle" transform="scale(.8,1.25)" transform-origin="${x} ${y}">${escapeXml(c)}</text>`;
-            });
-
-            return `<svg id="sealSvg" viewBox="0 0 300 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="300" height="300" rx="2" fill="#b01c1c"/>
-                <rect x="40" y="40" width="220" height="220" fill="#fff"/>
-                ${textSvg}
-            </svg>`;
-        }
-
-        function renderSeal() {
-            const textInput = document.getElementById('sealText');
-            const text = textInput.value;
-            document.getElementById('sealContainer').innerHTML = buildFullSealSVG(text);
-            document.getElementById('conversionStatus').textContent = text.trim() ? '已自動套用小篆字形並排入印面' : '請輸入文字';
-            saveText(text);
-        }
-
-        const sealInput = document.getElementById('sealText');
-        sealInput.value = loadSavedText();
-        sealInput.addEventListener('input', renderSeal);
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            if (confirm('確定要恢復預設文字嗎？')) { sealInput.value = DEFAULT_TEXT; renderSeal(); }
-        });
-
-        document.getElementById('downloadBtn').addEventListener('click', () => {
-            const svgEl = document.getElementById('sealSvg');
-            if (!svgEl) return;
-            const svgData = new XMLSerializer().serializeToString(svgEl);
-            const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d'), img = new Image();
-            canvas.width = 600; canvas.height = 600;
-            const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            img.onload = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const a = document.createElement('a'); a.download = 'seal_zhuan.png'; a.href = canvas.toDataURL('image/png'); a.click();
-                URL.revokeObjectURL(url);
-            };
-            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
-        });
-        renderSeal();
-    </script>
-</body>
-</html>
+<header class="topbar"><div class="clock-panel"><span>台北時間：</span><strong id="taipeiClock">15:21:12</strong></div><div class="top-actions"><button class="notice-btn" aria-label="通知">✉</button><div class="menu-wrap"><button class="menu-btn" id="menuBtn" onclick="toggleMenu()">選單 MENU</button><div class="menu" id="menu"><button data-page="dashboard" onclick="go('dashboard')">⌂ 儀表板</button><button data-page="students" onclick="go('students')">♙ 學生名冊</button><button data-page="subjects" onclick="go('subjects')">▦ 科目設定</button><button data-page="exams" onclick="go('exams')">▣ 考試管理</button><button data-page="scores" onclick="go('scores')">✎ 成績登錄</button><button data-page="reports" onclick="go('reports')">▤ 統計報表</button><div class="divider"></div><button onclick="backup()">⇩ 匯出本機備份</button><button onclick="document.getElementById('restoreFile').click()">⇧ 匯入本機備份</button><button onclick="resetAll()" style="color:#c34b58">⚠ 清除全部資料</button></div></div></div></header>
+<main class="layout">
+<section id="dashboard" class="page active"><div class="page-head"><div><div class="eyebrow">OVERVIEW</div><h2>班級學習概況</h2><p>從這裡掌握學生、科目與考試資料的整體狀態。</p></div><button class="btn primary" onclick="go('scores')">＋ 快速登錄成績</button></div><div class="grid"><div class="card stat"><span class="label">學生人數</span><strong id="statStudents">0</strong><span class="hint">目前名冊</span></div><div class="card stat"><span class="label">自訂科目</span><strong id="statSubjects">0</strong><span class="hint">尚未預設任何科目</span></div><div class="card stat"><span class="label">考試場次</span><strong id="statExams">0</strong><span class="hint">已建立紀錄</span></div><div class="card stat"><span class="label">待關注學生</span><strong id="statAlerts">0</strong><span class="hint">最近一次成績低於 60</span></div></div><div class="two"><div class="card"><h3 class="section-title">最近考試</h3><div id="recentExams"></div></div><div class="card"><h3 class="section-title">使用流程</h3><div class="note"><b>01　建立名冊</b><br>先在「學生名冊」加入班級學生。<br><br><b>02　設定科目</b><br>依需求自行新增科目，不帶入任何預設資料。<br><br><b>03　建立考試並登分</b><br>建立考試後，在「成績登錄」批次輸入分數。<br><br><b>04　檢視報表</b><br>查看平均、及格率、排名與預警。</div></div></div></section>
+<section id="students" class="page"><div class="page-head"><div><div class="eyebrow">BASIC DATA</div><h2>學生名冊</h2><p>資料只會保存在此瀏覽器的本機儲存空間。</p></div><button class="btn primary" onclick="openStudent()">＋ 新增學生</button></div><div class="card"><div class="toolbar"><input id="studentSearch" placeholder="搜尋學號或姓名…" oninput="renderStudents()"></div><div id="studentsTable"></div></div></section>
+<section id="subjects" class="page"><div class="page-head"><div><div class="eyebrow">BASIC DATA</div><h2>科目設定</h2><p>系統不預設科目，請依班級實際課程自行新增。</p></div></div><div class="two"><div class="card"><h3 class="section-title">新增科目</h3><div class="form-grid"><div class="field"><label>科目名稱 *</label><input id="subjectName" placeholder="例如：國文"></div><div class="field"><label>及格分數</label><input id="subjectPass" type="number" min="0" max="100" value="60"></div></div><div class="actions"><button class="btn primary" onclick="addSubject()">加入科目</button></div></div><div class="card"><h3 class="section-title">目前科目 <span id="subjectCount" class="pill gray">0</span></h3><div id="subjectList"></div></div></div></section>
+<section id="exams" class="page"><div class="page-head"><div><div class="eyebrow">ASSESSMENTS</div><h2>考試管理</h2><p>先建立考試場次，再至成績登錄輸入學生分數。</p></div><button class="btn primary" onclick="openExam()">＋ 建立考試</button></div><div class="card"><div id="examsTable"></div></div></section>
+<section id="scores" class="page"><div class="page-head"><div><div class="eyebrow">SCORE ENTRY</div><h2>成績登錄</h2><p>選擇考試後，可一次輸入全部學生各科分數。</p></div></div><div class="card"><div class="form-grid"><div class="field"><label>選擇考試</label><select id="scoreExam" onchange="renderScoreEntry()"></select></div><div class="field"><label>學生搜尋（選填）</label><input id="scoreSearch" placeholder="篩選學生…" oninput="renderScoreEntry()"></div></div><div id="scoreEntry"></div></div></section>
+<section id="reports" class="page"><div class="page-head"><div><div class="eyebrow">ANALYTICS</div><h2>統計報表</h2><p>依考試查看班級表現、排名與低分預警。</p></div><button class="btn secondary" onclick="exportCSV()">⇩ 匯出 CSV</button></div><div class="card"><div class="toolbar"><select id="reportExam" onchange="renderReport()"></select></div><div id="reportArea"></div></div></section>
+</main>
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<input type="file" id="restoreFile" accept="application/json" class="hidden" onchange="restore(event)">
+<script>
+const KEY='class_grade_system_v2';
+let state=load();
+function blank(){return{students:[],subjects:[],exams:[],scores:{}}}
+function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return blank()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function toggleMenu(){document.getElementById('menu').classList.toggle('open');document.getElementById('menuBtn').classList.toggle('open')}
+function go(page){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.menu button[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.getElementById('menu').classList.remove('open');document.getElementById('menuBtn').classList.remove('open');renderAll()}
+document.addEventListener('click',e=>{if(!e.target.closest('.menu-wrap')){document.getElementById('menu').classList.remove('open');document.getElementById('menuBtn').classList.remove('open')}});
+function tick(){document.getElementById('taipeiClock').textContent=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date())}setInterval(tick,1000);tick();
+function renderAll(){renderDashboard();renderStudents();renderSubjects();renderExams();fillExamSelects();renderScoreEntry();renderReport()}
+function renderDashboard(){document.getElementById('statStudents').textContent=state.students.length;document.getElementById('statSubjects').textContent=state.subjects.length;document.getElementById('statExams').textContent=state.exams.length;let last=state.exams[state.exams.length-1],alerts=0;if(last)alerts=state.students.filter(s=>state.subjects.some(sub=>{let v=state.scores[last.id]?.[s.id]?.[sub.id];return v!==undefined&&v!==''&&Number(v)<Number(sub.pass||60)})).length;document.getElementById('statAlerts').textContent=alerts;let box=document.getElementById('recentExams');box.innerHTML=state.exams.length?state.exams.slice(-5).reverse().map(e=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0"><span><b>${esc(e.name)}</b><br><small class="note">${esc(e.date||'未填日期')} · ${e.subjectIds.length} 科</small></span><span class="pill gray">${Object.keys(state.scores[e.id]||{}).length} 人</span></div>`).join(''):'<div class="empty"><b>尚無考試</b>請從右上角 MENU 建立第一場考試。</div>'}
+function renderStudents(){let q=(document.getElementById('studentSearch')?.value||'').toLowerCase();let arr=state.students.filter(s=>(s.name+' '+s.no+' '+(s.className||'')).toLowerCase().includes(q));let box=document.getElementById('studentsTable');if(!arr.length){box.innerHTML='<div class="empty"><b>尚無學生資料</b>請按「新增學生」建立名冊。</div>';return}box.innerHTML=`<div class="table-wrap"><table><thead><tr><th>學號</th><th>姓名</th><th>班級</th><th>座號</th><th>操作</th></tr></thead><tbody>${arr.map(s=>`<tr><td>${esc(s.no)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.className||'-')}</td><td>${esc(s.seat||'-')}</td><td><button class="btn danger" onclick="removeStudent('${s.id}')">刪除</button></td></tr>`).join('')}</tbody></table></div>`}
+function renderSubjects(){document.getElementById('subjectCount').textContent=state.subjects.length;let box=document.getElementById('subjectList');box.innerHTML=state.subjects.length?'<div class="subject-list">'+state.subjects.map(s=>`<div class="subject-chip"><span>${esc(s.name)} · 及格 ${s.pass}</span><button onclick="removeSubject('${s.id}')">×</button></div>`).join('')+'</div>':'<div class="empty"><b>尚未設定科目</b>請先新增班級實際使用的科目。</div>'}
+function renderExams(){let box=document.getElementById('examsTable');if(!state.exams.length){box.innerHTML='<div class="empty"><b>尚無考試場次</b>請先設定科目，再建立考試。</div>';return}box.innerHTML=`<div class="table-wrap"><table><thead><tr><th>考試名稱</th><th>日期</th><th>科目</th><th>已登錄</th><th>操作</th></tr></thead><tbody>${state.exams.slice().reverse().map(e=>`<tr><td><b>${esc(e.name)}</b></td><td>${esc(e.date||'-')}</td><td>${e.subjectIds.map(x=>esc(state.subjects.find(s=>s.id===x)?.name||'已刪除')).join('、')}</td><td>${Object.keys(state.scores[e.id]||{}).length}/${state.students.length}</td><td><button class="btn danger" onclick="removeExam('${e.id}')">刪除</button></td></tr>`).join('')}</tbody></table></div>`}
+function fillExamSelects(){['scoreExam','reportExam'].forEach(idn=>{let el=document.getElementById(idn);if(!el)return;let old=el.value;el.innerHTML='<option value="">— 請選擇考試 —</option>'+state.exams.map(e=>`<option value="${e.id}">${esc(e.name)}（${esc(e.date||'未填日期')}）</option>`).join('');if(state.exams.some(e=>e.id===old))el.value=old})}
+function renderScoreEntry(){let exam=state.exams.find(e=>e.id===document.getElementById('scoreExam')?.value),box=document.getElementById('scoreEntry');if(!exam){box.innerHTML='<div class="empty" style="margin-top:18px"><b>請先選擇考試</b>選擇後會顯示成績輸入表。</div>';return}if(!state.students.length||!exam.subjectIds.length){box.innerHTML='<div class="alert">需要先建立學生與科目，才能登錄成績。</div>';return}let q=(document.getElementById('scoreSearch')?.value||'').toLowerCase(),students=state.students.filter(s=>(s.name+' '+s.no).toLowerCase().includes(q)),scores=state.scores[exam.id]||{};box.innerHTML=`<div class="alert">分數範圍為 0–100；留白代表尚未登錄。輸入完成後請按下方「儲存全部成績」。</div><div class="table-wrap"><table><thead><tr><th>學號</th><th>姓名</th>${exam.subjectIds.map(x=>`<th>${esc(state.subjects.find(s=>s.id===x)?.name||'未知科目')}</th>`).join('')}</tr></thead><tbody>${students.map(st=>`<tr><td>${esc(st.no)}</td><td><b>${esc(st.name)}</b></td>${exam.subjectIds.map(sub=>{let v=scores[st.id]?.[sub]??'';return `<td><input aria-label="${esc(st.name)} ${esc(sub)}" type="number" min="0" max="100" step="0.1" value="${esc(v)}" data-student="${st.id}" data-subject="${sub}" style="width:86px;padding:7px;border:1px solid #ccd7e4;border-radius:6px"></td>`}).join('')}</tr>`).join('')}</tbody></table></div><div class="actions"><button class="btn primary" onclick="saveScores('${exam.id}')">儲存全部成績</button></div>`}
+function saveScores(examId){let map=state.scores[examId]||{};document.querySelectorAll('#scoreEntry input[data-student]').forEach(i=>{let n=i.dataset.student,s=i.dataset.subject;map[n]??={};if(i.value==='')delete map[n][s];else map[n][s]=Math.max(0,Math.min(100,Number(i.value)));if(!Object.keys(map[n]).length)delete map[n]});state.scores[examId]=map;save();alert('成績已儲存於本機。')}
+function renderReport(){let e=state.exams.find(x=>x.id===document.getElementById('reportExam')?.value),box=document.getElementById('reportArea');if(!e){box.innerHTML='<div class="empty"><b>請選擇考試</b>選擇後顯示班級統計與預警。</div>';return}let rows=state.students.map(st=>{let vals=e.subjectIds.map(s=>state.scores[e.id]?.[st.id]?.[s]).filter(v=>v!==undefined&&v!=='').map(Number),avg=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;return{st,avg,vals}}).sort((a,b)=>(b.avg??-1)-(a.avg??-1));let all=rows.flatMap(r=>r.vals),avg=all.length?all.reduce((a,b)=>a+b,0)/all.length:0,pass=all.length?all.filter(x=>x>=60).length/all.length*100:0;box.innerHTML=`<div class="grid" style="margin-bottom:18px"><div class="card stat"><span class="label">班級平均</span><strong>${avg.toFixed(1)}</strong></div><div class="card stat"><span class="label">及格率</span><strong>${pass.toFixed(1)}%</strong></div><div class="card stat"><span class="label">已登錄人數</span><strong>${rows.filter(x=>x.vals.length).length}</strong></div><div class="card stat"><span class="label">科目數</span><strong>${e.subjectIds.length}</strong></div></div><div class="table-wrap"><table><thead><tr><th>排名</th><th>學號</th><th>姓名</th>${e.subjectIds.map(s=>`<th>${esc(state.subjects.find(x=>x.id===s)?.name||'未知')}</th>`).join('')}<th>平均</th><th>狀態</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${r.avg===null?'-':i+1}</td><td>${esc(r.st.no)}</td><td><b>${esc(r.st.name)}</b></td>${e.subjectIds.map(s=>{let v=state.scores[e.id]?.[r.st.id]?.[s];return `<td>${v===undefined?'—':Number(v).toFixed(1)}</td>`}).join('')}<td>${r.avg===null?'—':r.avg.toFixed(1)}</td><td>${r.avg===null?'<span class="pill gray">未登錄</span>':r.avg<60?'<span class="pill red">需關注</span>':'<span class="pill green">良好</span>'}</td></tr>`).join('')}</tbody></table></div>`}
+function openModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modalBack').classList.add('show')}function closeModal(){document.getElementById('modalBack').classList.remove('show')}
+function openStudent(){openModal('<button class="close" onclick="closeModal()">×</button><h3>新增學生</h3><div class="form-grid"><div class="field"><label>學號 *</label><input id="mNo"></div><div class="field"><label>姓名 *</label><input id="mName"></div><div class="field"><label>班級</label><input id="mClass" placeholder="例如：一年一班"></div><div class="field"><label>座號</label><input id="mSeat" type="number" min="1"></div></div><div class="actions"><button class="btn primary" onclick="addStudent()">儲存學生</button><button class="btn secondary" onclick="closeModal()">取消</button></div>')}
+function addStudent(){let no=document.getElementById('mNo').value.trim(),name=document.getElementById('mName').value.trim();if(!no||!name)return alert('請填寫學號與姓名。');if(state.students.some(s=>s.no===no))return alert('此學號已存在。');state.students.push({id:id(),no,name,className:document.getElementById('mClass').value.trim(),seat:document.getElementById('mSeat').value.trim()});closeModal();save()}
+function removeStudent(x){if(confirm('確定刪除此學生？相關成績也會一併移除。')){state.students=state.students.filter(s=>s.id!==x);Object.values(state.scores).forEach(m=>delete m[x]);save()}}
+function addSubject(){let name=document.getElementById('subjectName').value.trim(),pass=Number(document.getElementById('subjectPass').value||60);if(!name)return alert('請輸入科目名稱。');if(state.subjects.some(s=>s.name===name))return alert('科目名稱已存在。');state.subjects.push({id:id(),name,pass:Math.max(0,Math.min(100,pass))});document.getElementById('subjectName').value='';save()}
+function removeSubject(x){if(confirm('刪除科目後，已建立考試中的科目欄位仍保留但無法再編輯名稱。確定刪除？')){state.subjects=state.subjects.filter(s=>s.id!==x);save()}}
+function openExam(){if(!state.subjects.length)return alert('請先到「科目設定」新增至少一個科目。');openModal('<button class="close" onclick="closeModal()">×</button><h3>建立考試場次</h3><div class="form-grid"><div class="field"><label>考試名稱 *</label><input id="mExamName" placeholder="例如：第一次月考"></div><div class="field"><label>考試日期</label><input id="mExamDate" type="date"></div></div><div class="field" style="margin-top:14px"><label>選擇本次考試科目</label><div class="subject-list">'+state.subjects.map(s=>`<label class="subject-chip"><input type="checkbox" value="${s.id}" checked> ${esc(s.name)}</label>`).join('')+'</div></div><div class="actions"><button class="btn primary" onclick="addExam()">建立考試</button><button class="btn secondary" onclick="closeModal()">取消</button></div>')}
+function addExam(){let name=document.getElementById('mExamName').value.trim(),subs=[...document.querySelectorAll('#modal input[type=checkbox]:checked')].map(x=>x.value);if(!name||!subs.length)return alert('請填寫考試名稱並至少選擇一個科目。');state.exams.push({id:id(),name,date:document.getElementById('mExamDate').value,subjectIds:subs});closeModal();save()}
+function removeExam(x){if(confirm('確定刪除此考試及其所有成績？')){state.exams=state.exams.filter(e=>e.id!==x);delete state.scores[x];save()}}
+function backup(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='班級成績備份_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}
+function restore(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.students||!x.subjects||!x.exams||!x.scores)throw Error();state=x;save();alert('備份還原完成。')}catch(e){alert('檔案格式不正確，無法還原。')}ev.target.value=''};r.readAsText(f)}
+function resetAll(){if(confirm('這會清除所有本機資料，且無法復原。建議先匯出備份。確定清除？')){state=blank();save();go('dashboard')}}
+function exportCSV(){let e=state.exams.find(x=>x.id===document.getElementById('reportExam')?.value);if(!e)return alert('請先選擇考試。');let lines=[['排名','學號','姓名',...e.subjectIds.map(s=>state.subjects.find(x=>x.id===s)?.name||'科目'),'平均'].join(',')];let rows=state.students.map(st=>{let vals=e.subjectIds.map(s=>state.scores[e.id]?.[st.id]?.[s]);let nums=vals.filter(v=>v!==undefined&&v!=='').map(Number),av=nums.length?(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1):'';return{st,vals,av}}).sort((a,b)=>(Number(b.av)||-1)-(Number(a.av)||-1));rows.forEach((r,i)=>lines.push([r.av?i+1:'',r.st.no,r.st.name,...r.vals.map(v=>v??''),r.av].map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')));let blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=e.name+'_成績報表.csv';a.click();URL.revokeObjectURL(a.href)}
+renderAll();
+</script></body></html>
